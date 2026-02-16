@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http:thymeleaf.org">
+<head>
+    <title>Lista de Categorías | IPSSEGURIDAD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+    <h1 class="mb-4">Categorías del Sistema</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tb>
+            <tr th:each="cat : ${categories}">
+                <td th:text="${cat.id}">1</td>
+                <td th:text="${cat.name}">Nombre Ejemplo</td>
+                <td th:text="${cat.description}">Desc Ejemplo</td>
+            </tr>
+        </tb>
+    </table>
+
+</body>
+</html>
