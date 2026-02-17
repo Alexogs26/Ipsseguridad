@@ -24,7 +24,7 @@
 
                         <input type="text" name="q" class="form-control form-control-lg"
                             placeholder="¿Qué estas buscando? (Ej: cámara, dvr..)"
-                            th:value="${curentSearch}">
+                            th:value="${currentSearch}">
 
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="bi bi-search"></i> Buscar
@@ -79,8 +79,8 @@
                                 <h4 class="mb-0 text-primary fw-bold" th:text="'$' + ${product.price}">$0.00</h4>
                             </div>
 
-                            <a th:href="'https://wa.me/5213312345678?text=Hola, me interesa el producto *' + ${product.sku} + '* (' + ${product.name} + ')'"
-                               class="btn btn-success w-100 fw-bold" target="_blank">
+                            <a class="btn btn-success w-100 fw-bold"
+                               th:href="'https://wa.me/5213322560090?text=Hola, me interesa el producto *' + ${product.sku} + '* (' + ${product.name} + ')'" target="_blank">
                                 <i class="bi bi-whatsapp"></i> Lo quiero
                             </a>
                         </div>

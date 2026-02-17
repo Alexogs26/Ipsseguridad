@@ -8,4 +8,6 @@ public interface ProductService {
     List<Product> findAll();
 
     List<Product> search(String query);
+
+    Product save(Product product);
 }

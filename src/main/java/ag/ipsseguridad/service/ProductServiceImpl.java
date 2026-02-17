@@ -28,4 +28,10 @@ public class ProductServiceImpl implements ProductService {
 
         return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
     }
+
+    @Override
+    @Transactional
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
 }
