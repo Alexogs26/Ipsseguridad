@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -40,5 +41,26 @@ public class AdminProductController {
     public String saveProduct(Product product) {
         productService.save(product);
         return "redirect:/admin/products";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Product product = productService.findById(id);
+
+        if (product == null) {
+            return "redirect:/admin/products";
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("suppliers", supplierRepository.findAll());
+
+        return "admin/product-form";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable Long id) {
+        productService.deleteById(id);
+        return "redirect:/admin/products"; // recharge list
     }
 }

@@ -10,4 +10,10 @@ public interface ProductService {
     List<Product> search(String query);
 
     Product save(Product product);
+
+    Product findById(Long id);
+
+    void deleteById(Long id);
+
+    List<Product> findByCategoryId(Long id);
 }

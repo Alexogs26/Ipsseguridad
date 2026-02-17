@@ -39,7 +39,16 @@
 
                     <td th:text="${prod.category != null ? prod.category.name : '-'}">Cat</td>
                     <td>
-                        <a href="#" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <a th:href="@{/admin/products/edit/{id}(id=${prod.id})}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <a th:href="@{/admin/products/delete/{id}(id=${prod.id})}"
+                           class="btn btn-sm btn-outline-danger ms-2"
+                           onclick="return confirm('¿Estás seguro de eliminar este producto? No se podrá recuperar.');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
                     </td>
                 </tr>
                 </tbody>

@@ -18,6 +18,8 @@
 
           <form action="/admin/products/save" method="post" th:object="${product}">
 
+            <input type="hidden" th:field="*{id}">
+
             <div class="mb-3">
               <label class="form-label">SKU (Código)</label>
               <input type="text" class="form-control" th:field="*{sku}" placeholder="Ej: CAM-001" required>
