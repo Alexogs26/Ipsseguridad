@@ -145,6 +145,39 @@
             </div>
     </div>
 
+        <div class="container mt-4 mb-5" th:if="${page.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center">
+
+                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/(q=${currentSearch}, page=${page.number - 1})}"
+                           th:if="${categoryId == null}">Anterior</a>
+
+                        <a class="page-link"
+                           th:href="@{/category/{id}(id=${categoryId}, page=${page.number - 1})}"
+                           th:if="${categoryId != null}">Anterior</a>
+                    </li>
+
+                    <li class="page-item disabled">
+                    <span class="page-link"
+                          th:text="'Página ' + ${page.number + 1} + ' de ' + ${page.totalPages}">
+                    </span>
+                    </li>
+
+                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/(q=${currentSearch}, page=${page.number + 1})}"
+                           th:if="${categoryId == null}">Siguiente</a>
+
+                        <a class="page-link"
+                           th:href="@{/category/{id}(id=${categoryId}, page=${page.number + 1})}"
+                           th:if="${categoryId != null}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
     <footer class="bg-dark text-white text-center py-3 mt-auto">
         <p class="mb-0 small">&copy; 2026 IPSSEGURIDAD - Sistema de Ventas B2B</p>
     </footer>

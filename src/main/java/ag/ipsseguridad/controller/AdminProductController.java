@@ -6,6 +6,8 @@ import ag.ipsseguridad.repository.ProductRepository;
 import ag.ipsseguridad.repository.SupplierRepository;
 import ag.ipsseguridad.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +26,12 @@ public class AdminProductController {
     private final SupplierRepository supplierRepository;
 
     @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.findAll());
+    public String listProducts(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Product> productsPage = productService.findAll(PageRequest.of(page,20));
+
+        model.addAttribute("products", productsPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productsPage.getTotalPages());
         return "admin/product-list";
     }
 

@@ -3,6 +3,8 @@ package ag.ipsseguridad.service;
 import ag.ipsseguridad.model.Product;
 import ag.ipsseguridad.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -15,18 +17,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> search(String query) {
+    public Page<Product> search(String query, Pageable pageable) {
         if (query == null || query.trim().isEmpty()) {
-            return productRepository.findAll();
+            return productRepository.findAll(pageable);
         }
 
-        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> findByCategoryId(Long id) {
-        return productRepository.findByCategoryId(id);
+    public Page<Product> findByCategoryId(Long id, Pageable pageable) {
+        return productRepository.findByCategoryId(id, pageable);
     }
 }

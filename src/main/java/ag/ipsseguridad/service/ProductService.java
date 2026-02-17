@@ -1,13 +1,16 @@
 package ag.ipsseguridad.service;
 
 import ag.ipsseguridad.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> findAll();
+    Page<Product> findAll(Pageable pageable);
 
-    List<Product> search(String query);
+    Page<Product> search(String query, Pageable pageable);
 
     Product save(Product product);
 
@@ -15,5 +18,5 @@ public interface ProductService {
 
     void deleteById(Long id);
 
-    List<Product> findByCategoryId(Long id);
+    Page<Product> findByCategoryId(Long id, Pageable pageable);
 }
