@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>Mi Carrito | IPSSEGURIDAD</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    .logo-img { max-height: 50px; width: auto; }
+    .btn-ips { background-color: #dc3545; color: white; border: none; }
+    .btn-ips:hover { background-color: #b02a37; color: white; }
+    .text-ips { color: #dc3545; }
+    .bg-black { background-color: black; }
+
+    /* Estilos específicos para la tabla del carrito */
+    .cart-img { width: 80px; height: 80px; object-fit: contain; background: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; }
+    .quantity-input { max-width: 60px; text-align: center; border: none; border-top: 1px solid #ced4da; border-bottom: 1px solid #ced4da; }
+    .btn-qty { border: 1px solid #ced4da; background: #fff; }
+    .btn-qty:hover { background: #e9ecef; }
+  </style>
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+<header class="bg-white py-3 shadow-sm border-bottom">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
+        <a href="/" class="text-decoration-none">
+          <img src="https://media-qro1-1.cdn.whatsapp.net/v/t61.24694-24/491874935_1764242520794834_2122721365174586548_n.jpg?ccb=11-4&oh=01_Q5Aa3wFLg7b5Nncik2HxSz7JR-kV5xZuM1io2-19HZWbB2Snkw&oe=69A1E121&_nc_sid=5e03e0&_nc_cat=104"
+               alt="IPSSEGURIDAD Logo" class="logo-img">
+        </a>
+      </div>
+      <div class="col-md-8 text-end">
+        <a href="/" class="text-decoration-none text-secondary"><i class="bi bi-arrow-left"></i> Seguir Comprando</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1 fw-bold">RESUMEN DE COMPRA</span>
+  </div>
+</nav>
+
+<div class="container mb-5">
+
+  <div th:if="${cartItems.empty}" class="text-center py-5 bg-white rounded shadow-sm">
+    <i class="bi bi-cart-x display-1 text-muted opacity-25"></i>
+    <h3 class="mt-3 text-dark">Tu carrito está vacío</h3>
+    <p class="text-secondary mb-4">Parece que aún no has agregado productos de seguridad.</p>
+    <a href="/" class="btn btn-ips btn-lg px-5 rounded-pill shadow-sm">
+      Ir al Catálogo
+    </a>
+  </div>
+
+  <div th:if="${!cartItems.empty}" class="row g-4">
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="m-0 fw-bold">Artículos (<span th:text="${cartItems.size()}">0</span>)</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="bg-light text-secondary small">
+              <tr>
+                <th class="ps-4">Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end pe-4">Total</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="item : ${cartItems}">
+                <td class="ps-4 py-3">
+                  <div class="d-flex align-items-center">
+                    <a th:href="@{/product/{id}(id=${item.product.id})}">
+                      <img th:src="${item.product.imageUrl != null && !item.product.imageUrl.isEmpty() ? item.product.imageUrl : 'https://via.placeholder.com/80'}"
+                           class="cart-img me-3" alt="Producto">
+                    </a>
+                    <div>
+                      <a th:href="@{/product/{id}(id=${item.product.id})}" class="text-decoration-none text-dark fw-bold d-block text-truncate" style="max-width: 200px;" th:text="${item.product.name}">
+                        Nombre
+                      </a>
+                      <small class="text-muted d-block">SKU: <span th:text="${item.product.sku}"></span></small>
+                      <span class="text-ips fw-bold small" th:text="'$' + ${item.product.price}">$0.00</span>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="text-center">
+                  <form th:action="@{/cart/update}" method="post" class="d-flex justify-content-center align-items-center">
+                    <input type="hidden" name="productId" th:value="${item.product.id}">
+
+                    <div class="input-group input-group-sm" style="width: 110px;">
+                      <button type="submit" name="quantity" th:value="${item.quantity - 1}" class="btn btn-qty text-secondary">
+                        <i class="bi bi-dash"></i>
+                      </button>
+
+                      <input type="text" class="form-control text-center bg-white" th:value="${item.quantity}" readonly style="border-left:0; border-right:0;">
+
+                      <button type="submit" name="quantity" th:value="${item.quantity + 1}" class="btn btn-qty text-secondary">
+                        <i class="bi bi-plus"></i>
+                      </button>
+                    </div>
+                  </form>
+                </td>
+
+                <td class="text-end pe-4 fw-bold" th:text="'$' + ${item.getTotalPrice()}">
+                  $0.00
+                </td>
+
+                <td class="text-end pe-3">
+                  <a th:href="@{/cart/remove/{id}(id=${item.product.id})}" class="text-danger opacity-50 hover-opacity-100" title="Eliminar">
+                    <i class="bi bi-trash fs-5"></i>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3 text-end">
+        <a href="/" class="text-decoration-none text-muted small hover-red">
+          <i class="bi bi-chevron-left"></i> Continuar comprando
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-black text-white py-3">
+          <h5 class="m-0 fw-bold"><i class="bi bi-receipt me-2"></i>Resumen</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between mb-2 text-secondary">
+            <span>Subtotal</span>
+            <span th:text="'$' + ${total}">$0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3 text-secondary">
+            <span>Envío</span>
+            <span class="text-success small fw-bold">Por calcular</span>
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fw-bold fs-5">Total</span>
+            <span class="fw-bold fs-4 text-ips" th:text="'$' + ${total}">$0.00</span>
+          </div>
+
+          <div class="d-grid gap-2">
+            <a th:href="'https://wa.me/5213322560090?text=Hola,%20quisiera%20cotizar%20estos%20productos%20de%20mi%20carrito%20Web:%20(Total:%20$' + ${total} + ')'"
+               target="_blank"
+               class="btn btn-success fw-bold py-2 mb-2">
+              <i class="bi bi-whatsapp me-2"></i> Cotizar Rápido
+            </a>
+
+            <button disabled class="btn btn-dark btn-sm opacity-50" title="Próximamente">
+              Proceder al Pago Seguro <i class="bi bi-lock-fill small"></i>
+            </button>
+          </div>
+
+          <div class="mt-3 text-center">
+            <small class="text-muted" style="font-size: 0.75rem;">
+              <i class="bi bi-shield-check text-success"></i> Tus datos están protegidos.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="text-white pt-5 pb-3 mt-auto bg-black">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <h5 class="text-uppercase fw-bold text-danger mb-3">IPSSEGURIDAD</h5>
+        <p class="small text-secondary">Ingeniería de seguridad profesional.</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <h5 class="text-uppercase fw-bold text-danger mb-3">Contacto</h5>
+        <ul class="list-unstyled small text-secondary">
+          <li>33 2256 0090</li>
+          <li>ipsalarmasyseguridad@gmail.com</li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-4 text-md-end">
+        <p class="text-secondary small">&copy; 2026 IPS Ingeniería de Seguridad.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

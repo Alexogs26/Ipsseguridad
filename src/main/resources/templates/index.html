@@ -108,6 +108,17 @@
 
             <ul class="navbar-nav ms-auto align-items-center">
 
+                <li class="nav-item me-3">
+                    <a class="nav-link position-relative text-white" href="/cart">
+                        <i class="bi bi-cart3 fs-5"></i>
+                        <span th:if="${cartCount > 0}"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="font-size: 0.7rem;"
+                              th:text="${cartCount}">
+                        </span>
+                    </a>
+                </li>
+
                 <li class="nav-item" sec:authorize="!isAuthenticated()">
                     <a class="nav-link" href="/login">Iniciar Sesión</a>
                 </li>
@@ -205,16 +216,24 @@
                                     Ver Detalles
                                 </a>
 
-                                <a th:href="'https://wa.me/5213322560090?text=Hola, estoy interesado en el producto *' + ${product.sku} + '* (' + ${product.name} + ')'"
-                                   class="btn btn-success btn-sm fw-bold" target="_blank">
-                                    <i class="bi bi-whatsapp"></i> Pedir Rápido
-                                </a>
+                                <form th:action="@{/cart/add}" method="post" class="d-grid">
+                                    <input type="hidden" name="productId" th:value="${product.id}">
+                                    <button type="submit" class="btn btn-danger btn-sm fw-bold"
+                                            th:if="${product.stock > 0}">
+                                        <i class="bi bi-cart-plus"></i> Agregar
+                                    </button>
+
+                                    <button type="button" class="btn btn-secondary btn-sm fw-bold disabled"
+                                            th:if="${product.stock <= 0}">
+                                        <i class="bi bi-x-circle"></i> Agotado
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
     </div>
         <footer class="text-white pt-5 pb-3 mt-auto" style="background-color: black;">
             <div class="container">
