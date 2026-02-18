@@ -18,6 +18,7 @@ public class CartController {
     public String viewCart(Model model) {
         model.addAttribute("cartItems", cartService.getItems());
         model.addAttribute("total", cartService.getTotal());
+        model.addAttribute("whatsappLink", cartService.generateWhatsAppLink());
         return "cart/view";
     }
 

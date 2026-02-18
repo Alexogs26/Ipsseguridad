@@ -155,14 +155,14 @@
           </div>
 
           <div class="d-grid gap-2">
-            <a th:href="'https://wa.me/5213322560090?text=Hola,%20quisiera%20cotizar%20estos%20productos%20de%20mi%20carrito%20Web:%20(Total:%20$' + ${total} + ')'"
+            <a th:href="${whatsappLink}"
                target="_blank"
                class="btn btn-success fw-bold py-2 mb-2">
-              <i class="bi bi-whatsapp me-2"></i> Cotizar Rápido
+              <i class="bi bi-whatsapp me-2"></i> Solicitar Cotización
             </a>
 
-            <button disabled class="btn btn-dark btn-sm opacity-50" title="Próximamente">
-              Proceder al Pago Seguro <i class="bi bi-lock-fill small"></i>
+            <button class="btn btn-outline-danger btn-sm" onclick="window.print()">
+              <i class="bi bi-file-earmark-pdf"></i> Imprimir / Guardar como PDF
             </button>
           </div>
 
