@@ -9,6 +9,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -22,16 +24,26 @@ public class PasswordResetService {
     private final JavaMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public boolean processForgotPassword(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) return false;
+
+        if (userOptional.isEmpty()) {
+            return false;
+        }
 
         User user = userOptional.get();
+
+        tokenRepository.findByUser(user).ifPresent(oldToken -> {
+            tokenRepository.delete(oldToken);
+            tokenRepository.flush();
+        });
 
         PasswordResetToken token = new PasswordResetToken(user);
         tokenRepository.save(token);
 
         String resetLink = "http://localhost:8080/reset-password?token=" + token.getToken();
+        sendEmail(email, resetLink);
 
         return true;
     }
@@ -46,19 +58,36 @@ public class PasswordResetService {
         return resetToken.get().getUser();
     }
 
-    public void updatePassword(User user, String newPassword) {
+    public void updatePassword(String tokenStr, String newPassword) {
+        PasswordResetToken token = tokenRepository.findByToken(tokenStr)
+                .orElseThrow(() -> new RuntimeException("Token Inválido"));
+
+        User user = token.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
+        tokenRepository.delete(token);
     }
 
     private void sendEmail(String to, String link) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(to);
-        msg.setSubject("Recuperar Contraseña - IPS Seguridad");
-        msg.setText("Hola,\n\nHas solicitado restablecer tu contraseña.\n" +
-                "Haz clic en el siguiente enlace para crear una nueva:\n\n" + link +
-                "\n\nEste enlace expira en 1 hora.");
-        mailSender.send(msg);
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom("noreply.ipsseguridad@gmail.com");
+            msg.setTo(to);
+            msg.setSubject("Recuperar Contraseña - IPS Seguridad");
+            msg.setText("Hola,\n\n" +
+                    "Para restablecer tu contraseña, usa el siguiente enlace:\n" +
+                    link + "\n\n" +
+                    "(Si no solicitaste esto, ignora este mensaje).");
+
+            mailSender.send(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void removeExpiredTokens() {
+        tokenRepository.deleteByExpiryDateBefore(LocalDateTime.now());
     }
 }

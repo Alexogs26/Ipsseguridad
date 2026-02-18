@@ -92,7 +92,7 @@ public class AuthController {
         if (user == null) {
             return "redirect:/login?tokenError";
         }
-        passwordResetService.updatePassword(user, password);
+        passwordResetService.updatePassword(token, password);
         return "redirect:/login?resetSuccess";
     }
 
