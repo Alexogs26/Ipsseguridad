@@ -24,13 +24,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/product/**", "/category/**", "/images/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/","/register", "/product/**", "/category/**",
+                                "/images/**", "/css/**", "/js/**", "/forgot-password",
+                                "/reset-password", "/profile/", "/probar-correo").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .usernameParameter("email")
-                        .defaultSuccessUrl("/admin/products", true)
+                        .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .logout((logout) -> logout

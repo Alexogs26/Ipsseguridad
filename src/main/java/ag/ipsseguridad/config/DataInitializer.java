@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,23 +22,33 @@ public class DataInitializer {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.admin.email}")
+    private String adminEmail;
+
+    @Value("${app.admin.password}")
+    private String adminPassword;
+
     @Bean
     public CommandLineRunner initData() {
         return args -> {
-            Role adminRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> {
-                Role role = new Role();
-                role.setName("ROLE_USER");
-                return roleRepository.save(role);
-            });
+           Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
+               return roleRepository.save(new Role(null, "ROLE_ADMIN"));
+           });
 
-            if (!userRepository.existsByEmail("ipsalarmasyseguridad@gmail.com")) {
-                User admin = new User();
-                admin.setUsername("Admin Principal");
-                admin.setEmail("ipsalarmasyseguridad@gmail.com");
-                admin.setPassword(passwordEncoder.encode("123"));
-                admin.setRoles(Collections.singletonList(adminRole));
-                userRepository.save(admin);
-            }
+           User admin = userRepository.findByEmail(adminEmail).orElseGet(null);
+
+           if (admin == null) {
+               admin = new User();
+               admin.setUsername("Admin Principal");
+               admin.setEmail(adminEmail);
+               admin.setPassword(passwordEncoder.encode(adminPassword));
+               admin.setRoles(Collections.singletonList(adminRole));
+               userRepository.save(admin);
+           } else {
+               admin.setRoles(Collections.singletonList(adminRole));
+               admin.setPassword(passwordEncoder.encode(adminPassword));
+               userRepository.save(admin);
+           }
         };
     }
 }
