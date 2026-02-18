@@ -16,7 +16,7 @@
         </div>
         <div class="card-body">
 
-          <form action="/admin/products/save" method="post" th:object="${product}">
+          <form th:action="@{/admin/products/save}" method="post" th:object="${product}">
 
             <input type="hidden" th:field="*{id}">
 
