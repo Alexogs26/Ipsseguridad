@@ -50,12 +50,23 @@
 
 <div class="container-fluid px-4 mb-5">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 mb-0 text-gray-800 fw-bold">Historial de Pedidos</h2>
-    <span class="badge bg-primary fs-6" th:text="${orders.size()} + ' Pedidos Totales'">0</span>
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-4 d-flex align-items-center gap-2">
+      <h2 class="h3 mb-0 text-gray-800 fw-bold">Historial de Pedidos</h2>
+      <span class="badge bg-primary fs-7" th:text="${orders.size()}">0</span>
+    </div>
+    <div class="col-md-8 text-md-end">
+      <form th:action="@{/admin/orders}" method="get" class="d-flex justify-content-md-end">
+        <div class="input-group" style="max-width: 400px;">
+          <input type="text" name="q" th:value="${keyword}" class="form-control" placeholder="Buscar por Folio (IPS-...) o Email...">
+          <button class="btn btn-dark" type="submit"><i class="bi bi-search"></i></button>
+          <a th:if="${keyword != null}" href="/admin/orders" class="btn btn-outline-danger" title="Limpiar"><i class="bi bi-x-lg"></i></a>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <div class="card shadow-sm border-0 rounded-3">
+  <div class="card shadow-sm border-0 rounded-3 d-none d-lg-block">
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -81,22 +92,14 @@
               <span class="fw-bold text-dark d-block" th:text="${order.folio}">IPS-0000</span>
               <small class="text-muted" th:text="${#temporals.format(order.date, 'dd/MM/yyyy HH:mm')}">Fecha</small>
             </td>
-
             <td>
               <div class="d-flex align-items-center">
                 <i class="bi bi-person-circle fs-4 text-secondary me-2"></i>
                 <span th:text="${order.user.email}">correo@test.com</span>
               </div>
             </td>
-
-            <td>
-              <span class="fw-bold text-success" th:text="'$' + ${order.total}">$0.00</span>
-            </td>
-
-            <td>
-              <span class="badge bg-secondary opacity-75" th:text="${order.paymentMethod}">Método</span>
-            </td>
-
+            <td><span class="fw-bold text-success" th:text="'$' + ${order.total}">$0.00</span></td>
+            <td><span class="badge bg-secondary opacity-75" th:text="${order.paymentMethod}">Método</span></td>
             <td>
                                 <span class="badge"
                                       th:classappend="${
@@ -107,18 +110,12 @@
                                       }"
                                       th:text="${order.status}">ESTATUS</span>
             </td>
-
             <td class="text-end pe-4">
               <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" class="d-flex justify-content-end align-items-center">
                 <select name="status" class="form-select form-select-sm me-2" style="width: auto; min-width: 140px;">
-                  <option th:each="stat : ${allStatuses}"
-                          th:value="${stat}"
-                          th:text="${stat}"
-                          th:selected="${stat == order.status}"></option>
+                  <option th:each="stat : ${allStatuses}" th:value="${stat}" th:text="${stat}" th:selected="${stat == order.status}"></option>
                 </select>
-                <button type="submit" class="btn btn-sm btn-dark" title="Actualizar Estatus">
-                  <i class="bi bi-check-lg"></i>
-                </button>
+                <button type="submit" class="btn btn-sm btn-dark" title="Actualizar Estatus"><i class="bi bi-check-lg"></i></button>
               </form>
             </td>
           </tr>
@@ -127,7 +124,59 @@
       </div>
     </div>
   </div>
-</div>
+
+  <div class="d-lg-none">
+    <div th:if="${orders.empty}" class="text-center py-5 bg-white rounded-3 shadow-sm text-muted">
+      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+      Aún no hay pedidos registrados.
+    </div>
+
+    <div th:each="order : ${orders}" class="card shadow-sm border-0 mb-3 rounded-3">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom-0">
+        <div>
+          <span class="fw-bold text-dark d-block" th:text="${order.folio}">IPS-0000</span>
+          <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i><span th:text="${#temporals.format(order.date, 'dd/MM/yy HH:mm')}"></span></small>
+        </div>
+        <span class="badge"
+              th:classappend="${
+                          order.status.name() == 'PENDIENTE_PAGO' ? 'bg-warning text-dark' :
+                          (order.status.name() == 'PAGADO' ? 'bg-info text-dark' :
+                          (order.status.name() == 'ENVIADO' ? 'bg-primary' :
+                          (order.status.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))
+                      }"
+              th:text="${order.status}">ESTATUS</span>
+      </div>
+
+      <div class="card-body pt-0">
+        <div class="d-flex align-items-center mb-3 bg-light p-2 rounded">
+          <i class="bi bi-person-circle fs-4 text-secondary me-2"></i>
+          <span class="text-truncate fw-bold text-secondary" style="font-size: 0.85rem;" th:text="${order.user.email}">correo@test.com</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-end">
+          <div>
+            <small class="text-muted d-block mb-1">Método de Pago:</small>
+            <span class="badge border border-secondary text-secondary bg-white" th:text="${order.paymentMethod}">Método</span>
+          </div>
+          <div class="text-end">
+            <small class="text-muted d-block mb-1">Total</small>
+            <span class="fw-bold text-success fs-5" th:text="'$' + ${order.total}">$0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer bg-light py-3 border-top">
+        <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" class="d-flex gap-2">
+          <select name="status" class="form-select form-select-sm fw-bold text-secondary">
+            <option th:each="stat : ${allStatuses}" th:value="${stat}" th:text="${stat}" th:selected="${stat == order.status}"></option>
+          </select>
+          <button type="submit" class="btn btn-sm btn-dark px-3 fw-bold shadow-sm">
+            <i class="bi bi-arrow-repeat me-1"></i> Actualizar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

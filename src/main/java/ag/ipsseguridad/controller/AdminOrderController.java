@@ -16,8 +16,13 @@ public class AdminOrderController {
     private final OrderRepository orderRepository;
 
     @GetMapping
-    public String listOrders(Model model) {
-        model.addAttribute("orders", orderRepository.findByOrderByDateDesc());
+    public String listOrders(@RequestParam(name = "q", required = false) String keyword, Model model) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            model.addAttribute("orders", orderRepository.searchByKeyword(keyword));
+            model.addAttribute("keyword", keyword);
+        } else {
+            model.addAttribute("orders", orderRepository.findByOrderByDateDesc());
+        }
         model.addAttribute("allStatuses", OrderStatus.values());
         return "admin/order-list";
     }

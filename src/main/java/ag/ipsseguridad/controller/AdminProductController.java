@@ -24,14 +24,16 @@ public class AdminProductController {
     private final ProductService productService;
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
+    private final ProductRepository productRepository;
 
     @GetMapping
-    public String listProducts(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Product> productsPage = productService.findAll(PageRequest.of(page,20));
-
-        model.addAttribute("products", productsPage);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productsPage.getTotalPages());
+    public String listProducts(@RequestParam(name = "q", required = false) String keyword, Model model) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            model.addAttribute("products", productRepository.searchByKeyword(keyword));
+            model.addAttribute("keyword", keyword);
+        } else {
+            model.addAttribute("products", productRepository.findAll());
+        }
         return "admin/product-list";
     }
 
