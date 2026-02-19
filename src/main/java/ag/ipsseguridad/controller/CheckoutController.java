@@ -3,6 +3,7 @@ package ag.ipsseguridad.controller;
 import ag.ipsseguridad.dto.CartItem;
 import ag.ipsseguridad.model.*;
 import ag.ipsseguridad.repository.OrderRepository;
+import ag.ipsseguridad.repository.ProductRepository;
 import ag.ipsseguridad.repository.UserRepository;
 import ag.ipsseguridad.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class CheckoutController {
     private final CartService cartService;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @PostMapping("/process")
     public String processOrder(@AuthenticationPrincipal UserDetails userDetails,
@@ -55,6 +57,11 @@ public class CheckoutController {
         for (CartItem item : cartItems) {
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
+
+            Product dbProduct = productRepository.findById(item.getProduct().getId())
+                            .orElseThrow(() -> new RuntimeException("Producto no encontrado en la BD"));
+
+            detail.setProduct(dbProduct);
             detail.setQuantity(item.getQuantity());
             detail.setPrice(item.getProduct().getPrice());
 

@@ -17,9 +17,7 @@
     <div class="row align-items-center">
       <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
         <a href="/" class="text-decoration-none">
-          <img th:src="@{/images/logo.png}"
-               alt="IPSSEGURIDAD Logo"
-               class="logo-img">
+          <img th:src="@{/images/logo.png}" alt="IPSSEGURIDAD Logo" class="logo-img">
         </a>
       </div>
       <div class="col-md-8 text-end">
@@ -39,9 +37,7 @@
     <i class="bi bi-bag-x display-1 text-muted opacity-25"></i>
     <h3 class="mt-3 text-dark">Aún no tienes pedidos</h3>
     <p class="text-secondary mb-4">Explora nuestro catálogo y protege tu espacio hoy mismo.</p>
-    <a href="/" class="btn btn-danger px-4 rounded-pill fw-bold shadow-sm">
-      Ir al Catálogo
-    </a>
+    <a href="/" class="btn btn-danger px-4 rounded-pill fw-bold shadow-sm">Ir al Catálogo</a>
   </div>
 
   <div class="row g-4" th:if="${orders != null and !orders.empty}">
@@ -64,17 +60,17 @@
                               (order.status?.name() == 'ENTREGADO' ? 'bg-success' : 'bg-secondary')))
                           }"
                 th:text="${order.status != null ? order.status : 'DESCONOCIDO'}">
-                    </span>
+          </span>
         </div>
 
         <div class="card-body bg-light border-top border-bottom py-3">
 
           <div class="d-flex justify-content-between align-items-center">
             <div>
-                            <span class="text-dark fw-semibold small d-block">
-                                <i class="bi bi-box-seam me-1 text-muted"></i>
-                                Contiene <span th:text="${order.details != null ? order.details.size() : 0}"></span> artículo(s)
-                            </span>
+                <span class="text-dark fw-semibold small d-block">
+                    <i class="bi bi-box-seam me-1 text-muted"></i>
+                    Contiene <span th:text="${order.details != null ? order.details.size() : 0}"></span> artículo(s)
+                </span>
               <small class="text-muted" style="font-size: 0.75rem;" th:text="'SKUs: ' + ${order.getSkuSummary()}">SKUs: ...</small>
             </div>
 
@@ -87,13 +83,22 @@
           <div class="collapse mt-3" th:id="'detallePedido' + ${order.id}">
             <ul class="list-group list-group-flush border-top pt-2" th:if="${order.details != null}">
               <li th:each="detail : ${order.details}" class="list-group-item bg-transparent px-0 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-10">
+
                 <div class="d-flex align-items-center">
                   <span class="badge bg-secondary me-3" th:text="${detail.quantity} + 'x'">1x</span>
-                  <div>
-                    <span class="text-dark small fw-semibold d-block" th:text="${detail.product?.name}">Producto</span>
-                    <small class="text-muted" th:text="'SKU: ' + ${detail.product?.sku}"></small>
+
+                  <div th:if="${detail.product != null}">
+                    <span class="text-dark small fw-semibold d-block" th:text="${detail.product.name}">Producto</span>
+                    <small class="text-success fw-bold" th:if="${detail.product.sku != null and !detail.product.sku.empty}" th:text="'SKU: ' + ${detail.product.sku}"></small>
+                    <small class="text-danger fw-bold" th:if="${detail.product.sku == null or detail.product.sku.empty}">¡EL SKU ESTÁ VACÍO EN BD!</small>
+                  </div>
+
+                  <div th:if="${detail.product == null}">
+                    <span class="text-danger small fw-bold d-block"><i class="bi bi-exclamation-triangle"></i> Producto Borrado/Fantasma</span>
+                    <small class="text-muted">Este artículo se quedó en el historial pero ya no existe en el catálogo.</small>
                   </div>
                 </div>
+
                 <span class="text-muted small fw-bold" th:text="'$' + ${detail.price != null ? detail.price : '0.00'}">$0.00</span>
               </li>
             </ul>

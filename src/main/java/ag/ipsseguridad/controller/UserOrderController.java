@@ -26,7 +26,7 @@ public class UserOrderController {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        model.addAttribute("orders", orderRepository.findByUserOrderByDateDesc(user));
+        model.addAttribute("orders", orderRepository.findByUserWithFullDetails(user));
         return "user/orders";
     }
 }
