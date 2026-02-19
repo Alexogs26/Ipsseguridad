@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Gestión de Pedidos | Admin IPS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    .logo-img { max-height: 80px; width: auto; }
+    .table-responsive { black-space: nowrap; }
+    .btn-vt {color: black}
+  </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container-fluid px-4">
+    <a href="/" class="text-decoration-none">
+      <img th:src="@{/images/logo.png}"
+           alt="IPSSEGURIDAD Logo"
+           class="logo-img">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse text-center mt-3 mt-lg-0" id="adminMenu">
+      <ul class="navbar-nav mx-auto mb-3 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link text-black opacity-75" href="/admin">
+            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-black opacity-75" href="/admin/products">
+            <i class="bi bi-box-seam me-1"></i> Inventario
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active fw-bold text-danger" href="/admin/orders">
+            <i class="bi bi-receipt me-1"></i> Pedidos
+          </a>
+        </li>
+      </ul>
+      <div class="d-flex justify-content-center">
+        <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-shop"></i> Ir a la Tienda</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid px-4 mb-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800 fw-bold">Historial de Pedidos</h2>
+    <span class="badge bg-primary fs-6" th:text="${orders.size()} + ' Pedidos Totales'">0</span>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-secondary">
+          <tr>
+            <th class="ps-4">Folio / Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Método Pago</th>
+            <th>Estatus</th>
+            <th class="text-center pe-4">Acción Rápida</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${orders.empty}">
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+              Aún no hay pedidos registrados.
+            </td>
+          </tr>
+          <tr th:each="order : ${orders}">
+            <td class="ps-4">
+              <span class="fw-bold text-dark d-block" th:text="${order.folio}">IPS-0000</span>
+              <small class="text-muted" th:text="${#temporals.format(order.date, 'dd/MM/yyyy HH:mm')}">Fecha</small>
+            </td>
+
+            <td>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-circle fs-4 text-secondary me-2"></i>
+                <span th:text="${order.user.email}">correo@test.com</span>
+              </div>
+            </td>
+
+            <td>
+              <span class="fw-bold text-success" th:text="'$' + ${order.total}">$0.00</span>
+            </td>
+
+            <td>
+              <span class="badge bg-secondary opacity-75" th:text="${order.paymentMethod}">Método</span>
+            </td>
+
+            <td>
+                                <span class="badge"
+                                      th:classappend="${
+                                          order.status.name() == 'PENDIENTE_PAGO' ? 'bg-warning text-dark' :
+                                          (order.status.name() == 'PAGADO' ? 'bg-info text-dark' :
+                                          (order.status.name() == 'ENVIADO' ? 'bg-primary' :
+                                          (order.status.name() == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))
+                                      }"
+                                      th:text="${order.status}">ESTATUS</span>
+            </td>
+
+            <td class="text-end pe-4">
+              <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" class="d-flex justify-content-end align-items-center">
+                <select name="status" class="form-select form-select-sm me-2" style="width: auto; min-width: 140px;">
+                  <option th:each="stat : ${allStatuses}"
+                          th:value="${stat}"
+                          th:text="${stat}"
+                          th:selected="${stat == order.status}"></option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-dark" title="Actualizar Estatus">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -85,7 +85,7 @@
             <span class="navbar-toggler-icon"></span> Menú
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse text-center mt-3 mt-lg-0" id="navbarNav">
             <ul class="navbar-nav me-auto"> <li class="nav-item">
                 <a class="nav-link active" href="/"><i class="bi bi-house-door"></i> Inicio</a>
             </li>
@@ -106,7 +106,7 @@
                 </li>
             </ul>
 
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav justify-content-center align-items-center gap-3 mb-3 mb-lg-0">
 
                 <li class="nav-item me-3">
                     <a class="nav-link position-relative text-white" href="/cart">
@@ -139,8 +139,8 @@
                             <h6 class="dropdown-header text-danger fw-bold">Administración</h6>
                         </li>
                         <li sec:authorize="hasRole('ADMIN')">
-                            <a class="dropdown-item" href="/admin/products">
-                                <i class="bi bi-box-seam"></i> Gestionar Productos
+                            <a class="btn btn-warning btn-sm fw-bold me-2" href="/admin" sec:authorize="hasRole('ADMIN')">
+                                <i class="bi bi-gear-fill"></i> Panel Admin
                             </a>
                         </li>
                         <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
@@ -273,7 +273,7 @@
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="/" class="text-decoration-none text-light opacity-75">Inicio</a></li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-light opacity-75">Catálogo Completo</a></li>
-                    <li class="mb-2"><a href="/admin/products" class="text-decoration-none text-light opacity-75">Acceso Admin</a></li>
+                    <li class="mb-2"><a href="/admin" class="text-decoration-none text-light opacity-75">Acceso Admin</a></li>
                 </ul>
             </div>
 

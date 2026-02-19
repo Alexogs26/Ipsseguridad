@@ -10,20 +10,43 @@
         .btn-ips:hover { background-color: #b02a37; color: white; }
         .admin-header { background-color: white; border-bottom: 4px solid #dc3545; }
         .logo-img { max-height: 80px; width: auto; }
+        .btn-vt {color: black}
     </style>
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-white admin-header shadow-sm mb-4">
-    <div class="container d-flex justify-content-between">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid px-4">
         <a href="/" class="text-decoration-none">
             <img th:src="@{/images/logo.png}"
                  alt="IPSSEGURIDAD Logo"
                  class="logo-img">
         </a>
-        <a href="/" class="btn btn-outline-dark btn-sm fw-bold">
-            <i class="bi bi-box-arrow-left"></i> Salir a Tienda
-        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse text-center mt-3 mt-lg-0" id="adminMenu">
+            <ul class="navbar-nav mx-auto mb-3 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold text-danger" href="/admin/products">
+                        <i class="bi bi-box-seam me-1"></i> Inventario
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin/orders">
+                        <i class="bi bi-receipt me-1"></i> Pedidos
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex justify-content-center">
+                <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-shop"></i> Ir a la Tienda</a>
+            </div>
+        </div>
     </div>
 </nav>
 
@@ -135,6 +158,6 @@
     </div>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

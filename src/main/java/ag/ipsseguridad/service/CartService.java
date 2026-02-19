@@ -72,32 +72,8 @@ public class CartService {
                 .sum();
     }
 
-    public String generateWhatsAppLink() {
-        if (items.isEmpty()) {
-            return "https://wa.me/5213322560090";
-        }
-
-        StringBuilder message = new StringBuilder();
-        message.append("Hola, solicito cotización de este pedido web:\n\n");
-
-        for (CartItem item : items.values()) {
-            message.append("▪ *").append(item.getProduct().getSku()).append("* | ");
-            message.append(item.getProduct().getName()).append("\n");
-            message.append("    Cant: ").append(item.getQuantity());
-            message.append(" X $").append(item.getProduct().getPrice());
-            message.append(" = $").append(item.getTotalPrice()).append("\n\n");
-        }
-
-        message.append("*TOTAL ESTIMADO: $").append(getTotal()).append("*");
-        message.append("\n\nQuedo en espera de confirmar existencias y envío");
-
-        try {
-            String encodeMessage = URLEncoder.encode(message.toString(), StandardCharsets.UTF_8);
-            encodeMessage = encodeMessage.replace("+", "%20");
-            return "https://api.whatsapp.com/send?phone=5213322560090&text=" + encodeMessage;
-        } catch (Exception e) {
-            return "https://api.whatsapp.com/send?phone=5213322560090";
-        }
+    public void clearCart() {
+        items.clear();
     }
 }
 
