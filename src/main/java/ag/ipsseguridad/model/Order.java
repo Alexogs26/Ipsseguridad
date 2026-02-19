@@ -36,6 +36,16 @@ public class Order {
     private String paymentMethod;
     private String transactionId;
 
+    public String getSkuSummary() {
+        if (details == null || details.isEmpty()) return "Sin artículos";
+
+        return details.stream()
+                .map(d -> d.getProduct() != null && d.getProduct().getSku() != null ? d.getProduct().getSku() : "N/A")
+                .limit(3)
+                .collect(java.util.stream.Collectors.joining(", ")) +
+                (details.size() > 3 ? "..." : "");
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

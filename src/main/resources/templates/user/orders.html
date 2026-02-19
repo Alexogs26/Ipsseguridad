@@ -70,10 +70,13 @@
         <div class="card-body bg-light border-top border-bottom py-3">
 
           <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted fw-semibold small">
-                            <i class="bi bi-box-seam me-1"></i>
-                            Contiene <span th:text="${order.details != null ? order.details.size() : 0}"></span> artículo(s)
-                        </span>
+            <div>
+                            <span class="text-dark fw-semibold small d-block">
+                                <i class="bi bi-box-seam me-1 text-muted"></i>
+                                Contiene <span th:text="${order.details != null ? order.details.size() : 0}"></span> artículo(s)
+                            </span>
+              <small class="text-muted" style="font-size: 0.75rem;" th:text="'SKUs: ' + ${order.getSkuSummary()}">SKUs: ...</small>
+            </div>
 
             <button class="btn btn-sm btn-outline-secondary fw-bold" type="button" data-bs-toggle="collapse"
                     th:data-bs-target="'#detallePedido' + ${order.id}" aria-expanded="false">
