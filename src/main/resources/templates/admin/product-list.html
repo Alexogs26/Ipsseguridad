@@ -1,85 +1,139 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin | Lista de Productos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin | Gestión de Inventario</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .btn-ips { background-color: #dc3545; color: white; font-weight: bold; }
+        .btn-ips:hover { background-color: #b02a37; color: white; }
+        .admin-header { background-color: white; border-bottom: 4px solid #dc3545; }
+        .logo-img { max-height: 80px; width: auto; }
+    </style>
 </head>
 <body class="bg-light">
 
-<div class="container mt-5 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gestión de Inventario</h2>
-        <a href="/admin/products/new" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Nuevo Producto
+<nav class="navbar navbar-white admin-header shadow-sm mb-4">
+    <div class="container d-flex justify-content-between">
+        <a href="/" class="text-decoration-none">
+            <img th:src="@{/images/logo.png}"
+                 alt="IPSSEGURIDAD Logo"
+                 class="logo-img">
+        </a>
+        <a href="/" class="btn btn-outline-dark btn-sm fw-bold">
+            <i class="bi bi-box-arrow-left"></i> Salir a Tienda
+        </a>
+    </div>
+</nav>
+
+<div class="container mb-5">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="fw-bold m-0 text-dark">Inventario</h2>
+        <a href="/admin/products/new" class="btn btn-ips shadow-sm w-100 w-md-auto">
+            <i class="bi bi-plus-lg fw-bold me-1"></i> Nuevo Producto
         </a>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden d-none d-md-block">
         <div class="card-body p-0">
-            <table class="table table-striped table-hover mb-0">
-                <thead class="table-dark">
-                <tr>
-                    <th>SKU</th>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="prod : ${products}">
-                    <td th:text="${prod.sku}" class="fw-bold">SKU-123</td>
-                    <td th:text="${prod.name}">Nombre</td>
-                    <td th:text="'$' + ${prod.price}">$0.00</td>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">SKU</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría</th>
+                        <th class="pe-4 text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                    <tr th:each="prod : ${products}">
+                        <td class="ps-4"><span class="badge bg-secondary" th:text="${prod.sku}">SKU</span></td>
+                        <td class="fw-bold text-dark" th:text="${prod.name}">Nombre</td>
+                        <td class="text-success fw-bold" th:text="'$' + ${prod.price}">$0.00</td>
+                        <td>
+                            <span th:class="${prod.stock < 5} ? 'badge bg-danger' : 'badge bg-success'"
+                                  th:text="${prod.stock + ' unids'}">10
+                            </span>
+                        </td>
+                        <td class="text-muted small text-uppercase fw-bold" th:text="${prod.category != null ? prod.category.name : '-'}">Cat</td>
+                        <td class="pe-4 text-center">
+                            <div class="btn-group shadow-sm">
+                                <a th:href="@{/admin/products/edit/{id}(id=${prod.id})}" class="btn btn-sm btn-light border" title="Editar">
+                                    <i class="bi bi-pencil-fill text-primary"></i>
+                                </a>
+                                <a th:href="@{/admin/products/delete/{id}(id=${prod.id})}"
+                                   class="btn btn-sm btn-light border text-danger"
+                                   onclick="return confirm('¿Eliminar producto?');">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-                    <td th:class="${prod.stock < 5} ? 'text-danger fw-bold' : ''"
-                        th:text="${prod.stock}">10</td>
+    <div class="d-block d-md-none">
+        <div class="row row-cols-1 g-3">
+            <div class="col" th:each="prod : ${products}">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title fw-bold text-dark mb-0 pe-2" th:text="${prod.name}">Nombre del Producto</h6>
+                            <span class="text-success fw-bold fs-5" th:text="'$' + ${prod.price}">$0.00</span>
+                        </div>
 
-                    <td th:text="${prod.category != null ? prod.category.name : '-'}">Cat</td>
+                        <div class="mb-3 text-muted small">
+                            <span class="badge bg-secondary me-1" th:text="${prod.sku}">SKU-123</span>
+                            <span class="text-uppercase fw-bold" th:text="${prod.category != null ? prod.category.name : '-'}">Categoría</span>
+                        </div>
 
-                    <td>
-                        <a th:href="@{/admin/products/edit/{id}(id=${prod.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
-                            <i class="bi bi-pencil"></i>
-                        </a>
+                        <div class="mb-3">
+                            <span class="small text-muted fw-bold me-2">STOCK:</span>
+                            <span th:class="${prod.stock < 5} ? 'badge bg-danger' : 'badge bg-success'"
+                                  th:text="${prod.stock + ' unids'}">10 unids
+                            </span>
+                        </div>
 
-                        <a th:href="@{/admin/products/delete/{id}(id=${prod.id})}"
-                           class="btn btn-sm btn-outline-danger ms-1"
-                           onclick="return confirm('¿Estás seguro de eliminar este producto? No se podrá recuperar.');"
-                           title="Eliminar">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a th:href="@{/admin/products/edit/{id}(id=${prod.id})}" class="btn btn-outline-primary btn-sm flex-fill fw-bold">
+                                <i class="bi bi-pencil-fill me-1"></i> Editar
+                            </a>
+                            <a th:href="@{/admin/products/delete/{id}(id=${prod.id})}"
+                               class="btn btn-outline-danger btn-sm flex-fill fw-bold"
+                               onclick="return confirm('¿Eliminar producto?');">
+                                <i class="bi bi-trash-fill me-1"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="mt-4 d-flex justify-content-center" th:if="${totalPages > 1}">
         <nav>
-            <ul class="pagination">
+            <ul class="pagination shadow-sm">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/products(page=${currentPage - 1})}">Anterior</a>
+                    <a class="page-link text-danger" th:href="@{/admin/products(page=${currentPage - 1})}">Anterior</a>
                 </li>
-
                 <li class="page-item disabled">
-                    <span class="page-link text-dark"
-                          th:text="'Página ' + ${currentPage + 1} + ' de ' + ${totalPages}">
-                    </span>
+                    <span class="page-link text-dark fw-bold bg-light" th:text="'Página ' + ${currentPage + 1} + ' de ' + ${totalPages}"></span>
                 </li>
-
                 <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/products(page=${currentPage + 1})}">Siguiente</a>
+                    <a class="page-link text-danger" th:href="@{/admin/products(page=${currentPage + 1})}">Siguiente</a>
                 </li>
             </ul>
         </nav>
     </div>
 
-    <div class="mt-3 text-center">
-        <a href="/" class="text-decoration-none">&larr; Volver a la Tienda Pública</a>
-    </div>
 </div>
 
 </body>

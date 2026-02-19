@@ -3,10 +3,10 @@
 <head>
     <title>IPSSEGURIDAD | Catálogo</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-
         .search-input-red {
             border: 2px solid #dc3545;
             border-radius: 50px 0 0 50px;
@@ -32,23 +32,28 @@
             border-color: #b02a37;
         }
 
-
         .logo-img {
-            max-height: 50px;
+            max-height: 80px;
             width: auto;
+        }
+
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
         }
     </style>
 </head>
-</head>
-<body class="bg-light">
+<body class="bg-light d-flex flex-column min-vh-100">
 
 <header class="bg-white py-3 shadow-sm border-bottom">
     <div class="container">
         <div class="row align-items-center">
-
             <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
                 <a href="/" class="text-decoration-none">
-                    <img src="https://media-qro1-1.cdn.whatsapp.net/v/t61.24694-24/491874935_1764242520794834_2122721365174586548_n.jpg?ccb=11-4&oh=01_Q5Aa3wFLg7b5Nncik2HxSz7JR-kV5xZuM1io2-19HZWbB2Snkw&oe=69A1E121&_nc_sid=5e03e0&_nc_cat=104"
+                    <img th:src="@{/images/logo.png}"
                          alt="IPSSEGURIDAD Logo"
                          class="logo-img">
                 </a>
@@ -56,15 +61,11 @@
 
             <div class="col-md-6">
                 <form action="/" method="get" class="d-flex">
-
                     <input type="text" name="q" class="form-control form-control-lg search-input-red"
-                           placeholder="¿Qué modelo buscas?"
-                           th:value="${currentSearch}">
-
+                           placeholder="¿Qué modelo buscas?" th:value="${currentSearch}">
                     <button type="submit" class="btn btn-search-red btn-lg">
                         <i class="bi bi-search"></i>
                     </button>
-
                     <a th:if="${currentSearch != null}" href="/" class="btn btn-outline-secondary ms-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Borrar filtro">
                         <i class="bi bi-x-lg"></i>
                     </a>
@@ -86,28 +87,23 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto"> <li class="nav-item">
-                <a class="nav-link active" href="/"><i class="bi bi-house-door"></i> Inicio</a>
-            </li>
-
-                <li class="nav-item dropdown">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/"><i class="bi bi-house-door"></i> Inicio</a>
+                </li>
+                <li class="nav-item dropdown d-lg-none">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-grid"></i> Categorías
+                        Categorías
                     </a>
                     <ul class="dropdown-menu">
                         <li th:each="cat : ${menuCategories}">
-                            <a class="dropdown-item"
-                               th:href="@{/category/{id}(id=${cat.id})}"
-                               th:text="${cat.name}">Cámaras</a>
+                            <a class="dropdown-item" th:href="@{/category/{id}(id=${cat.id})}" th:text="${cat.name}">Cámaras</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/">Ver Todo</a></li>
                     </ul>
                 </li>
             </ul>
 
             <ul class="navbar-nav ms-auto align-items-center">
-
                 <li class="nav-item me-3">
                     <a class="nav-link position-relative text-white" href="/cart">
                         <i class="bi bi-cart3 fs-5"></i>
@@ -144,7 +140,6 @@
                             </a>
                         </li>
                         <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
-
                         <li><a class="dropdown-item" href="#">Mis Pedidos</a></li>
                         <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
                         <li>
@@ -152,9 +147,7 @@
                                 <i class="bi bi-shield-lock me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
-
                         <li><hr class="dropdown-divider"></li>
-
                         <li>
                             <form th:action="@{/logout}" method="post" class="m-0">
                                 <button class="dropdown-item text-danger fw-bold" type="submit">
@@ -169,127 +162,177 @@
     </div>
 </nav>
 
-    <div class="container">
-        <h1>Prueba de Estructura</h1>
-    </div>
+<div class="container mb-5">
+    <div class="row">
 
-    <div class="container mb-5">
+        <div class="col-md-3 mb-4 d-none d-md-block">
 
-        <div th:if="${currentSearch != null}" class="alert alert-info mb-4">
-            Resultados para: <strong th:text="${currentSearch}"></strong>
-            <span class="badge bg-secondary ms-2" th:text="${products.size() + ' encontrados'}"></span>
+            <div class="accordion shadow-sm" id="accordionCategories">
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed bg-black text-white fw-bold" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseCategories"
+                                aria-expanded="false" aria-controls="collapseCategories">
+                            <i class="bi bi-list-ul me-2"></i> Categorías
+                        </button>
+                    </h2>
+
+                    <div id="collapseCategories" class="accordion-collapse collapse" aria-labelledby="headingOne">
+                        <div class="accordion-body p-0">
+                            <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+
+                                <a href="/" class="list-group-item list-group-item-action"
+                                   th:classappend="${currentCategory == null} ? 'active bg-danger border-danger' : ''">
+                                    <i class="bi bi-grid-fill me-2 small"></i> Todos los productos
+                                </a>
+
+                                <a th:each="cat : ${menuCategories}"
+                                   th:href="@{/category/{id}(id=${cat.id})}"
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                   th:classappend="${currentCategory != null and currentCategory.id == cat.id} ? 'active bg-danger border-danger' : ''">
+                                    <span th:text="${cat.name}">Cámaras</span>
+                                    <span class="badge bg-light text-secondary rounded-pill" style="font-size: 0.7rem;">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </span>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-danger text-white mt-4 text-center p-3 border-0 rounded-3 shadow-sm">
+                <h5>¿Dudas Técnicas?</h5>
+                <p class="small mb-2">Soporte experto 24/7</p>
+                <a href="https://wa.me/5213322560090" class="btn btn-light btn-sm fw-bold text-danger rounded-pill w-100">
+                    <i class="bi bi-whatsapp"></i> Chat Ingeniero
+                </a>
+            </div>
         </div>
 
-        <div th:if="${products.empty}" class="text-center py-5">
-            <i class="bi bi-box-seam display-1 text-muted"></i>
-            <h3 class="mt-3 text-muted">No encontramos productos</h3>
-            <p>Intenta con otra palabra clave o <a href="/">ver todo el catálogo</a>.</p>
-        </div>
+        <div class="col-12 col-md-9">
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                <h2 class="fw-bold mb-0 text-dark fs-3">
+                    <span th:text="${currentCategory != null ? currentCategory.name : 'Catálogo Completo'}">Catálogo</span>
+                </h2>
+                <span class="badge bg-dark rounded-pill" th:text="${products.size() + ' Items'}">0 Items</span>
+            </div>
 
-            <div class="col" th:each="product : ${products}">
-                <div class="card h-100 border-0 shadow-sm product-card">
+            <div th:if="${currentSearch != null}" class="alert alert-info mb-4 d-flex justify-content-between align-items-center">
+                <span>Resultados para: <strong th:text="${currentSearch}"></strong></span>
+                <a href="/" class="btn btn-sm btn-outline-info border-0"><i class="bi bi-x-lg"></i> Limpiar</a>
+            </div>
 
-                    <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none">
-                        <img th:src="${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : 'https://via.placeholder.com/300?text=Sin+Imagen'}"
-                             class="card-img-top bg-white p-3" alt="Imagen del Producto"
-                             style="height: 200px; object-fit: contain;">
-                    </a>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                <div class="col" th:each="product : ${products}">
+                    <div class="card h-100 border-0 shadow-sm product-card">
 
-                    <div class="card-body d-flex flex-column">
-                        <small class="text-muted mb-1"
-                               th:text="${product.category != null ? product.category.name : 'General'}">Categoría</small>
+                        <div class="position-absolute top-0 start-0 p-2 z-1">
+                            <span class="badge bg-danger shadow-sm" th:if="${product.stock > 0}">Disponible</span>
+                            <span class="badge bg-secondary shadow-sm" th:if="${product.stock <= 0}">Agotado</span>
+                        </div>
 
-                        <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none text-dark">
-                            <h5 class="card-title text-truncate" th:text="${product.name}">Nombre</h5>
+                        <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none overflow-hidden d-block">
+                            <img th:src="${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : 'https://via.placeholder.com/300?text=Sin+Imagen'}"
+                                 class="card-img-top bg-white p-4 transition-transform" alt="Producto"
+                                 style="height: 220px; object-fit: contain;">
                         </a>
 
-                        <div class="mt-auto pt-3">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-light text-dark border" th:text="${product.sku}">SKU</span>
-                                <h4 class="mb-0 text-primary fw-bold" th:text="'$' + ${product.price}">$0.00</h4>
-                            </div>
+                        <div class="card-body d-flex flex-column border-top">
+                            <small class="text-danger fw-bold text-uppercase" style="font-size: 0.7rem;"
+                                   th:text="${product.category != null ? product.category.name : 'General'}">CAT</small>
 
-                            <div class="d-grid gap-2">
-                                <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm">
-                                    Ver Detalles
-                                </a>
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none text-dark mb-2">
+                                <h5 class="card-title text-truncate" th:text="${product.name}" style="font-size: 1rem;">Nombre</h5>
+                            </a>
 
-                                <form th:action="@{/cart/add}" method="post" class="d-grid">
-                                    <input type="hidden" name="productId" th:value="${product.id}">
-                                    <button type="submit" class="btn btn-danger btn-sm fw-bold"
-                                            th:if="${product.stock > 0}">
-                                        <i class="bi bi-cart-plus"></i> Agregar
-                                    </button>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 text-dark fw-bold" th:text="'$' + ${product.price}">$0.00</h4>
+                                </div>
 
-                                    <button type="button" class="btn btn-secondary btn-sm fw-bold disabled"
-                                            th:if="${product.stock <= 0}">
-                                        <i class="bi bi-x-circle"></i> Agotado
-                                    </button>
-                                </form>
+                                <div class="d-grid gap-2">
+                                    <form th:action="@{/cart/add}" method="post" class="d-grid">
+                                        <input type="hidden" name="productId" th:value="${product.id}">
+                                        <button type="submit" class="btn btn-danger fw-bold shadow-sm" th:if="${product.stock > 0}">
+                                            <i class="bi bi-cart-plus me-1"></i> Agregar
+                                        </button>
+                                        <button type="button" class="btn btn-light text-muted border" th:if="${product.stock <= 0}" disabled>
+                                            Sin Stock
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div th:if="${products.empty}" class="text-center py-5 bg-white rounded shadow-sm">
+                <div class="mb-3 text-muted opacity-25">
+                    <i class="bi bi-search" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="h5 text-muted">No encontramos resultados</h3>
+                <p class="small text-secondary mb-3">Intenta buscar con otro término o navega por categorías.</p>
+                <a href="/" class="btn btn-outline-danger btn-sm px-4 rounded-pill">Ver todo el catálogo</a>
+            </div>
+
         </div>
     </div>
-        <footer class="text-white pt-5 pb-3 mt-auto" style="background-color: black;">
-            <div class="container">
-                <div class="row">
-
-                    <div class="col-md-4 mb-4">
-                        <h5 class="text-uppercase fw-bold text-danger mb-3">IPSSEGURIDAD</h5>
-                        <p class="small text-secondary">
-                            Ingeniería de seguridad profesional. Protegido 24 HRS.
-                            Venta e instalación de sistemas de videovigilancia y alarmas.
-                        </p>
-                        <div class="d-flex gap-3">
-                            <a href="https://www.facebook.com/ips.seguridad.547" class="text-white fs-5 hover-red"><i class="bi bi-facebook"></i></a>
-                            <a href="https://www.instagram.com/ips_seguridad/" class="text-white fs-5 hover-red"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="text-white fs-5 hover-red"><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 mb-4">
-                        <h5 class="text-uppercase fw-bold text-danger mb-3">Enlaces Rápidos</h5>
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><a href="/" class="text-decoration-none text-light opacity-75">Inicio</a></li>
-                            <li class="mb-2"><a href="#" class="text-decoration-none text-light opacity-75">Catálogo Completo</a></li>
-                            <li class="mb-2"><a href="/admin/products" class="text-decoration-none text-light opacity-75">Acceso Admin</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-4 mb-4">
-                        <h5 class="text-uppercase fw-bold text-danger mb-3">Contacto</h5>
-                        <ul class="list-unstyled small text-secondary">
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="bi bi-geo-alt-fill text-danger me-2 fs-5"></i>
-                                <span>Tesistán, Jalisco, México.<br>CP 45200</span>
-                            </li>
-                            <li class="mb-3 d-flex align-items-center">
-                                <i class="bi bi-whatsapp text-danger me-2 fs-5"></i>
-                                <a href="https://wa.me/5213322560090" class="text-decoration-none text-secondary">
-                                    33 2256 0090 / 33 3830 7302
-                                </a>
-                            </li>
-                            <li class="mb-3 d-flex align-items-center">
-                                <i class="bi bi-envelope-fill text-danger me-2 fs-5"></i>
-                                <span class="text-break">ipsalarmasyseguridad@gmail.com</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <hr class="border-secondary my-4 opacity-25">
-
-                <div class="text-center text-secondary small">
-                    <p class="mb-0">&copy; 2026 IPS Ingeniería de Seguridad.</p>
+</div>
+<footer class="text-white pt-5 pb-3 mt-auto" style="background-color: black;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold text-danger mb-3">IPSSEGURIDAD</h5>
+                <p class="small text-secondary">
+                    Ingeniería de seguridad profesional. Protegido 24 HRS.
+                    Venta e instalación de sistemas de videovigilancia y alarmas.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="https://www.facebook.com/ips.seguridad.547" class="text-white fs-5 hover-red"><i class="bi bi-facebook"></i></a>
+                    <a href="https://www.instagram.com/ips_seguridad/" class="text-white fs-5 hover-red"><i class="bi bi-instagram"></i></a>
                 </div>
             </div>
-        </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold text-danger mb-3">Enlaces Rápidos</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/" class="text-decoration-none text-light opacity-75">Inicio</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light opacity-75">Catálogo Completo</a></li>
+                    <li class="mb-2"><a href="/admin/products" class="text-decoration-none text-light opacity-75">Acceso Admin</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold text-danger mb-3">Contacto</h5>
+                <ul class="list-unstyled small text-secondary">
+                    <li class="mb-3 d-flex align-items-start">
+                        <i class="bi bi-geo-alt-fill text-danger me-2 fs-5"></i>
+                        <span>Tesistán, Jalisco, México.<br>CP 45200</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-whatsapp text-danger me-2 fs-5"></i>
+                        <a href="https://wa.me/5213322560090" class="text-decoration-none text-secondary">
+                            33 2256 0090 / 33 3830 7302
+                        </a>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-envelope-fill text-danger me-2 fs-5"></i>
+                        <span class="text-break">ipsalarmasyseguridad@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-secondary my-4 opacity-25">
+        <div class="text-center text-secondary small">
+            <p class="mb-0">&copy; 2026 IPS Ingeniería de Seguridad.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

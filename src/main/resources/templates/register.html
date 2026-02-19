@@ -2,49 +2,70 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>IPSSEGURIDAD | Crear Cuenta</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .login-card { width: 100%; max-width: 450px; border: none; border-radius: 15px; overflow: hidden; }
-        .login-header { background-color: black; padding: 30px; text-align: center; border-bottom: 5px solid #dc3545; }
-        .btn-ips { background-color: #dc3545; color: white; font-weight: bold; }
-        .btn-ips:hover { background-color: #b02a37; color: white; }
+        .login-header {
+            background-color: black;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 5px solid #dc3545;
+        }
+        .btn-ips {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-ips:hover {
+            background-color: #b02a37;
+            color: white;
+        }
     </style>
 </head>
-<body>
+<body class="bg-light d-flex align-items-center min-vh-100">
 
-<div class="card shadow-lg login-card">
-    <div class="login-header">
-        <h3 class="text-white fw-bold m-0">IPS <span class="text-danger">REGISTRO</span></h3>
-        <small class="text-secondary">Únete para ver precios especiales</small>
-    </div>
+<div class="container">
+    <div class="row justify-content-center">
 
-    <div class="card-body p-4">
+        <div class="col-12 col-md-8 col-lg-5">
 
-        <div th:if="${error}" class="alert alert-danger text-center small" th:text="${error}"></div>
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="login-header">
+                    <h3 class="text-white fw-bold m-0">IPS <span class="text-danger">REGISTRO</span></h3>
+                    <small class="text-secondary">Únete para ver precios especiales</small>
+                </div>
 
-        <form th:action="@{/register}" method="post" th:object="${user}">
+                <div class="card-body p-4">
 
-            <div class="mb-3">
-                <label class="form-label text-muted">Correo Electrónico</label>
-                <input type="email" th:field="*{email}" class="form-control" placeholder="tu@empresa.com" required>
+                    <div th:if="${error}" class="alert alert-danger text-center small" th:text="${error}"></div>
+
+                    <form th:action="@{/register}" method="post" th:object="${user}">
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Correo Electrónico</label>
+                            <input type="email" th:field="*{email}" class="form-control form-control-lg" placeholder="tu@empresa.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Contraseña</label>
+                            <input type="password" th:field="*{password}" class="form-control form-control-lg" placeholder="Crea una contraseña segura" required>
+                            <div class="form-text">Te recomendamos usar mayúsculas y números.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-ips btn-lg">CREAR CUENTA</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center bg-white py-3 border-0">
+                    <span class="text-muted small">¿Ya tienes cuenta?</span>
+                    <a href="/login" class="text-decoration-none fw-bold text-danger ms-1">Inicia Sesión aquí</a>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label class="form-label text-muted">Contraseña</label>
-                <input type="password" th:field="*{password}" class="form-control" placeholder="Crea una contraseña segura" required>
-            </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-ips btn-lg">CREAR CUENTA</button>
-            </div>
-        </form>
-    </div>
-    <div class="card-footer text-center bg-white py-3 border-0">
-        <span class="text-muted small">¿Ya tienes cuenta?</span>
-        <a href="/login" class="text-decoration-none fw-bold text-danger">Inicia Sesión aquí</a>
+        </div>
     </div>
 </div>
-
 </body>
 </html>

@@ -35,7 +35,7 @@
 
 
         .logo-img {
-            max-height: 50px;
+            max-height: 80px;
             width: auto;
         }
     </style>
@@ -48,7 +48,7 @@
 
             <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
                 <a href="/" class="text-decoration-none">
-                    <img src="https://media-qro1-1.cdn.whatsapp.net/v/t61.24694-24/491874935_1764242520794834_2122721365174586548_n.jpg?ccb=11-4&oh=01_Q5Aa3wFLg7b5Nncik2HxSz7JR-kV5xZuM1io2-19HZWbB2Snkw&oe=69A1E121&_nc_sid=5e03e0&_nc_cat=104"
+                    <img th:src="@{/images/logo.png}"
                          alt="IPSSEGURIDAD Logo"
                          class="logo-img">
                 </a>
@@ -236,12 +236,13 @@
 
                     <hr class="my-4 text-secondary opacity-25">
 
-                    <div class="description-section">
-                        <h4 class="fw-bold mb-2">Descripción y Detalles</h4>
-                        <div class="bg-light p-4 rounded text-secondary" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6;"
-                             th:text="${product.description}">
-                        </div>
+                <div class="description-section container mt-4">
+                    <h4 class="fw-bold mb-2">Descripción y Detalles</h4>
+                    <div class="bg-light p-4 rounded text-secondary"
+                         style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6;"
+                         th:text="${product.description}">
                     </div>
+                </div>
 
                 </div>
             </div>
