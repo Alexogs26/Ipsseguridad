@@ -34,6 +34,6 @@ public class AdminOrderController {
         order.setStatus(status);
         orderRepository.save(order);
 
-        return "redirect:admin/orders";
+        return "redirect:/admin/orders";
     }
 }
