@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  backend-api:
+    build:
+    container_name: ips_backend
+    ports:
+      - "8080:8080"
+    enviroment:
+      - DB_URL=jdbc:mariadb://192.168.100.19:3306/inventory_db
+      - DB_USER=alex
+      - DB_PASSWORD=Machiwi26.
+      - ADMIN_EMAIL=ipsalarmasyseguridad@gmail.com
+      - ADMIN_PASSWORD=Ipsseguridad2026
+      - ROBOT_EMAIL=noreply.ipsseguridad@gmail.com
+      - ROBOT_PASSWORD=uqdv mesm rvhn hjyx
+
+    restart: unless-stopped
