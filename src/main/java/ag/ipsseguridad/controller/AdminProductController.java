@@ -48,7 +48,7 @@ public class AdminProductController {
     @PostMapping("/save")
     public String saveProduct(Product product) {
         productService.save(product);
-        return "redirect:/admin/products";
+        return "redirect:admin/products";
     }
 
     @GetMapping("/edit/{id}")
@@ -56,7 +56,7 @@ public class AdminProductController {
         Product product = productService.findById(id);
 
         if (product == null) {
-            return "redirect:/admin/products";
+            return "redirect:admin/products";
         }
 
         model.addAttribute("product", product);
@@ -69,6 +69,6 @@ public class AdminProductController {
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteById(id);
-        return "redirect:/admin/products"; // recharge list
+        return "redirect:admin/products"; // recharge list
     }
 }
