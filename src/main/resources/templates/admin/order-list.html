@@ -74,7 +74,7 @@
           <tr>
             <th class="ps-4">Folio / Fecha</th>
             <th>Cliente</th>
-            <th>Total</th>
+            <th>Artículos</th> <th>Total</th>
             <th>Método Pago</th>
             <th>Estatus</th>
             <th class="text-center pe-4">Acción Rápida</th>
@@ -97,6 +97,9 @@
                 <i class="bi bi-person-circle fs-4 text-secondary me-2"></i>
                 <span th:text="${order.user.email}">correo@test.com</span>
               </div>
+            </td>
+            <td>
+              <small class="text-muted" th:text="${order.getSkuSummary()}">SKU-1, SKU-2...</small>
             </td>
             <td><span class="fw-bold text-success" th:text="'$' + ${order.total}">$0.00</span></td>
             <td><span class="badge bg-secondary opacity-75" th:text="${order.paymentMethod}">Método</span></td>
@@ -152,6 +155,7 @@
           <i class="bi bi-person-circle fs-4 text-secondary me-2"></i>
           <span class="text-truncate fw-bold text-secondary" style="font-size: 0.85rem;" th:text="${order.user.email}">correo@test.com</span>
         </div>
+        <div class="text-muted" th:text="${order.getSkuSummary()}"></div>
 
         <div class="d-flex justify-content-between align-items-end">
           <div>

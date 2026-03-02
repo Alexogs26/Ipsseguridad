@@ -20,4 +20,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE LOWER(o.folio) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(o.user.email) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY o.date DESC")
     List<Order> searchByKeyword(String keyword);
+
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.details d LEFT JOIN FETCH d.product WHERE LOWER(o.folio) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(o.user.email) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY o.date DESC")
+    List<Order> searchByKeywordWithDetails(@Param("keyword") String keyword);
+
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.details d LEFT JOIN FETCH d.product ORDER BY o.date DESC")
+    List<Order> findAllWithFullDetails();
 }
