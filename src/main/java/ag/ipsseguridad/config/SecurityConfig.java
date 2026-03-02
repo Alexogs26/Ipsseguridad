@@ -39,6 +39,11 @@ public class SecurityConfig {
                 .logout((logout) -> logout
                         .logoutSuccessUrl("/")
                         .permitAll()
+                )
+                .exceptionHandling((exceptions) -> exceptions
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/");
+                        })
                 );
 
         return http.build();
