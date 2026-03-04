@@ -19,4 +19,6 @@ public interface ProductService {
     void deleteById(Long id);
 
     Page<Product> findByCategoryId(Long id, Pageable pageable);
+
+    Product findByIdWithMedia(Long id);
 }

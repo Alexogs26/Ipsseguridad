@@ -43,7 +43,7 @@
 
         <div class="card-body p-4 p-md-5">
 
-          <form th:action="@{/admin/products/save}" method="post" th:object="${product}">
+          <form th:action="@{/admin/products/save}" method="post" th:object="${product}" enctype="multipart/form-data">
 
             <input type="hidden" th:field="*{id}">
 
@@ -112,10 +112,50 @@
             </div>
 
             <div class="mb-4">
-              <label class="form-label fw-bold text-muted small">URL de la Imagen</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
-                <input type="text" class="form-control" th:field="*{imageUrl}" placeholder="https://ejemplo.com/imagen.jpg">
+              <div th:if="${product.id != null and !product.mediaList.empty}" class="col-12 mb-4 p-3 bg-white rounded border">
+                <label class="form-label fw-bold text-muted small mb-3">Archivos Actuales (Selecciona para eliminar)</label>
+
+                <div class="d-flex flex-wrap gap-3">
+                  <div th:each="media : ${product.mediaList}" class="position-relative text-center">
+
+                    <img th:if="${media.type.name() == 'IMAGE'}"
+                         th:src="${media.url}"
+                         class="img-thumbnail shadow-sm" style="height: 100px; width: 100px; object-fit: cover;">
+
+                    <div th:if="${media.type.name() == 'VIDEO'}"
+                         class="bg-dark text-white d-flex align-items-center justify-content-center img-thumbnail shadow-sm" style="height: 100px; width: 100px;">
+                      <i class="bi bi-youtube fs-1 text-danger"></i>
+                    </div>
+
+                    <div class="form-check mt-2 d-flex justify-content-center">
+                      <input class="form-check-input border-danger" type="checkbox" name="deleteMediaIds" th:value="${media.id}" th:id="'del_' + ${media.id}">
+                      <label class="form-check-label small text-danger ms-1 fw-bold" th:for="'del_' + ${media.id}">Borrar</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h6 class="text-danger fw-bold mb-3 border-bottom pb-2 mt-2">Nuevos Archivos</h6>
+
+              <div class="row">
+                <div class="col-12 mb-4">
+                  <label class="form-label fw-bold text-muted small">
+                    <i class="bi bi-images text-danger"></i> Imágenes del Producto (Arrastra o selecciona)
+                  </label>
+                  <input class="form-control form-control-lg" type="file" id="images" name="images" multiple accept="image/*">
+                  <div class="form-text small">Puedes arrastrar varias imágenes aquí. La primera será la portada.</div>
+                </div>
+
+                <div class="col-12 mb-4">
+                  <label class="form-label fw-bold text-muted small">
+                    <i class="bi bi-youtube text-danger"></i> Video de Demostración (Opcional)
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-danger"><i class="bi bi-play-btn-fill"></i></span>
+                    <input type="url" class="form-control" name="videoUrl" placeholder="Ej: https://www.youtube.com/watch?v=...">
+                  </div>
+                  <div class="form-text small">Pega el enlace del video.</div>
+                </div>
               </div>
             </div>
 

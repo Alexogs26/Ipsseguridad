@@ -239,7 +239,7 @@
                         </div>
 
                         <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none overflow-hidden d-block">
-                            <img th:src="${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : 'https://via.placeholder.com/300?text=Sin+Imagen'}"
+                            <img th:src="${product.mainImageUrl}"
                                  class="card-img-top bg-white p-4 transition-transform" alt="Producto"
                                  style="height: 220px; object-fit: contain;">
                         </a>

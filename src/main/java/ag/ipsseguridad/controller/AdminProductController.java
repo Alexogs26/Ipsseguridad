@@ -1,20 +1,20 @@
 package ag.ipsseguridad.controller;
 
 import ag.ipsseguridad.model.Product;
+import ag.ipsseguridad.model.ProductMedia;
 import ag.ipsseguridad.repository.CategoryRepository;
 import ag.ipsseguridad.repository.ProductRepository;
 import ag.ipsseguridad.repository.SupplierRepository;
 import ag.ipsseguridad.service.ProductService;
+import ag.ipsseguridad.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -25,6 +25,7 @@ public class AdminProductController {
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
+    private final CloudinaryService cloudinaryService;
 
     @GetMapping
     public String listProducts(@RequestParam(name = "q", required = false) String keyword, Model model) {
@@ -46,8 +47,74 @@ public class AdminProductController {
     }
 
     @PostMapping("/save")
-    public String saveProduct(Product product) {
-        productService.save(product);
+    public String saveProduct(@ModelAttribute Product productForm,
+                              @RequestParam(value = "images", required = false)MultipartFile[] images,
+                              @RequestParam(value = "videoUrl", required = false) String videoUrl,
+                              @RequestParam(value = "deleteMediaIds", required = false) List<Long> deleteMediaIds) {
+
+        Product productToSave;
+
+        if (productForm.getId() != null) {
+            productToSave = productService.findByIdWithMedia(productForm.getId());
+
+            productToSave.setSku(productForm.getSku());
+            productToSave.setName(productForm.getName());
+            productToSave.setDescription(productForm.getDescription());
+            productToSave.setPrice(productForm.getPrice());
+            productToSave.setCost(productForm.getCost());
+            productToSave.setStock(productForm.getStock());
+            productToSave.setCategory(productForm.getCategory());
+            productToSave.setSupplier(productForm.getSupplier());
+
+            if (deleteMediaIds != null && !deleteMediaIds.isEmpty()) {
+                List<ProductMedia> mediaToDelete = productToSave.getMediaList().stream()
+                        .filter(media -> deleteMediaIds.contains(media.getId()))
+                        .toList();
+
+                for (ProductMedia media : mediaToDelete) {
+                    if (media.getType() == ProductMedia.MediaType.IMAGE) {
+                        cloudinaryService.deleteImageFromUrl(media.getUrl());
+                    }
+                }
+
+                productToSave.getMediaList().removeAll(mediaToDelete);
+            }
+        } else {
+            productToSave = productForm;
+        }
+
+        if (images != null && images.length > 0 && !images[0].isEmpty()) {
+            int orderIndex = productToSave.getMediaList().size() + 1;
+
+            for (MultipartFile file : images) {
+                try {
+                    String urlCloudinary = cloudinaryService.uploadImage(file);
+                    ProductMedia media = ProductMedia.builder()
+                            .url(urlCloudinary)
+                            .type(ProductMedia.MediaType.IMAGE)
+                            .order(orderIndex++)
+                            .product(productToSave)
+                            .build();
+                    productToSave.getMediaList().add(media);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        if (videoUrl != null && !videoUrl.trim().isEmpty()) {
+
+        ProductMedia videoMedia = ProductMedia.builder()
+                .url(videoUrl)
+                .type(ProductMedia.MediaType.VIDEO)
+                .order(99)
+                .product(productToSave)
+                .build();
+
+        productToSave.getMediaList().add(videoMedia);
+        }
+
+        productService.save(productToSave);
         return "redirect:/admin/products";
     }
 

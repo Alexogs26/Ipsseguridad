@@ -3,10 +3,13 @@ package ag.ipsseguridad.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,7 +35,10 @@ public class Product {
 
     private Integer stock;
 
-    private String imageUrl;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("order ASC")
+    @Builder.Default
+    private List<ProductMedia> mediaList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -41,4 +47,17 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
+
+    public String getMainImageUrl() {
+
+        if (mediaList == null || mediaList.isEmpty()) {
+            return "https://via.placeholder.com/300?text=Sin+Imagen";
+        }
+
+        return mediaList.stream()
+                .filter(m -> m.getType() == ProductMedia.MediaType.IMAGE)
+                .findFirst()
+                .map(ProductMedia::getUrl)
+                .orElse("https://via.placeholder.com/300?text=Sin+Imagen");
+    }
 }

@@ -54,4 +54,10 @@ public class ProductServiceImpl implements ProductService {
     public Page<Product> findByCategoryId(Long id, Pageable pageable) {
         return productRepository.findByCategoryId(id, pageable);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Product findByIdWithMedia(Long id) {
+        return productRepository.findByIdWithMedia(id).orElse(null);
+    }
 }

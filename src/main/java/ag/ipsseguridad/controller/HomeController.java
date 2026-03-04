@@ -33,8 +33,8 @@ public class HomeController {
             productsPage = productService.findAll(pageRequest);
         }
 
-        model.addAttribute("products", productsPage.getContent()); // La lista de productos actual
-        model.addAttribute("page", productsPage); // Toda la info de paginación (total de páginas, etc)
+        model.addAttribute("products", productsPage.getContent());
+        model.addAttribute("page", productsPage);
 
         return "index";
     }
