@@ -27,4 +27,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.mediaList WHERE p.id = :id")
     Optional<Product> findByIdWithMedia(@Param("id") Long id);
+
+    @Query(value = "SELECT p FROM Product p",
+            countQuery = "SELECT count(p) FROM Product p")
+    Page<Product> findAllProductsPaged(Pageable pageable);
+
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.mediaList WHERE p.id IN :ids")
+    List<Product> findAllByIdWithMedia(@Param("ids") Iterable<Long> ids);
 }

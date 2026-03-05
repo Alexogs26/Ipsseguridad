@@ -17,8 +17,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Product> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> findAllProducsPaged(Pageable pageable) {
+        return productRepository.findAllProductsPaged(pageable);
     }
 
     @Override

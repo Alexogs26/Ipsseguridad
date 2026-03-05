@@ -77,7 +77,7 @@
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center">
                     <a th:href="@{/product/{id}(id=${item.product.id})}">
-                      <img th:src="${item.product.imageUrl != null && !item.product.imageUrl.isEmpty() ? item.product.imageUrl : 'https://via.placeholder.com/80'}"
+                      <img th:src="${item.product.mainImageUrl}"
                            class="cart-img me-3" alt="Producto">
                     </a>
                     <div>
@@ -85,7 +85,7 @@
                         Nombre
                       </a>
                       <small class="text-muted d-block">SKU: <span th:text="${item.product.sku}"></span></small>
-                      <span class="text-ips fw-bold small" th:text="'$' + ${item.product.price}">$0.00</span>
+                      <span class="text-success fw-bold small"><i class="bi bi-lock-fill"></i> A cotizar</span>
                     </div>
                   </div>
                 </td>
@@ -108,8 +108,8 @@
                   </form>
                 </td>
 
-                <td class="text-end pe-4 fw-bold" th:text="'$' + ${item.getTotalPrice()}">
-                  $0.00
+                <td class="text-end pe-4 fw-bold text-success">
+                  A cotizar
                 </td>
 
                 <td class="text-end pe-3">
@@ -131,43 +131,28 @@
       </div>
     </div>
 
-    <div class="col-lg-4">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-black text-white py-3">
-          <h5 class="m-0 fw-bold"><i class="bi bi-receipt me-2"></i>Resumen</h5>
-        </div>
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between mb-2 text-secondary">
-            <span>Subtotal</span>
-            <span th:text="'$' + ${total}">$0.00</span>
-          </div>
-          <div class="d-flex justify-content-between mb-3 text-secondary">
-            <span>Envío</span>
-            <span class="text-success small fw-bold">Por calcular</span>
-          </div>
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between mb-2 text-secondary">
+        <span>Subtotal</span>
+        <span class="text-success">A cotizar</span>
+      </div>
+      <div class="d-flex justify-content-between mb-3 text-secondary">
+        <span>Envío</span>
+        <span class="text-success small fw-bold">Por calcular</span>
+      </div>
 
-          <hr>
+      <hr>
 
-          <div class="d-flex justify-content-between mb-4">
-            <span class="fw-bold fs-5">Total</span>
-            <span class="fw-bold fs-4 text-ips" th:text="'$' + ${total}">$0.00</span>
-          </div>
+      <div class="d-flex justify-content-between mb-4">
+        <span class="fw-bold fs-5">Total Estimado</span>
+        <span class="fw-bold fs-5 text-success">A cotizar</span>
+      </div>
 
-          <form th:action="@{/checkout/process}" method="post" class="d-grid gap-2">
-
-            <div class="mb-2 text-start">
-              <label class="form-label small fw-bold text-muted">Método de Pago Preferido:</label>
-              <select name="paymentMethod" class="form-select form-select-sm">
-                <option value="WhatsApp/Transferencia">Transferencia / Depósito</option>
-                <option value="Efectivo_Tienda">Pago en Efectivo (Sucursal)</option>
-                <option value="Tarjeta" disabled>Tarjeta (Próximamente)</option>
-              </select>
-            </div>
-
-            <button type="submit" class="btn btn-success fw-bold py-2 mb-2" th:disabled="${cartItems.empty}">
-              <i class="bi bi-whatsapp me-2"></i> FINALIZAR PEDIDO
-            </button>
-          </form>
+      <form th:action="@{/cart/checkout/whatsapp}" method="post" class="d-grid gap-2">
+        <button type="submit" class="btn btn-success fw-bold py-3 mb-2 shadow-sm" th:disabled="${cartItems.empty}">
+          <i class="bi bi-whatsapp me-2 fs-5 align-middle"></i> SOLICITAR COTIZACIÓN
+        </button>
+      </form>
 
           <button class="btn btn-outline-danger btn-sm w-100" onclick="window.print()">
             <i class="bi bi-file-earmark-pdf"></i> Imprimir / Guardar como PDF

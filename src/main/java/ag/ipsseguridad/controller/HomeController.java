@@ -30,7 +30,7 @@ public class HomeController {
             productsPage = productService.search(q, pageRequest);
             model.addAttribute("currentSearch", q);
         } else {
-            productsPage = productService.findAll(pageRequest);
+            productsPage = productService.findAllProducsPaged(pageRequest);
         }
 
         model.addAttribute("products", productsPage.getContent());

@@ -231,46 +231,45 @@
 
                     <h2 class="text-primary fw-bold display-5 mb-4" th:text="'$' + ${product.price}">$0.00</h2>
 
+                    <div class="mb-4 mt-3">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-4 py-2 fs-5 rounded-pill shadow-sm">
+                            <i class="bi bi-shield-lock-fill me-2"></i> Precio Exclusivo por Cotización
+                        </span>
+                    </div>
+
                     <div class="mb-4">
-                            <span th:if="${product.stock > 5}" class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
-                                <i class="bi bi-check-circle-fill me-2"></i>Disponible: <strong th:text="${product.stock}"></strong> piezas
-                            </span>
-
+                        <span th:if="${product.stock > 5}" class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                            <i class="bi bi-check-circle-fill me-2"></i>Disponible: <strong th:text="${product.stock}"></strong> piezas
+                        </span>
                         <span th:if="${product.stock > 0 && product.stock <= 5}" class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>¡Solo quedan <strong th:text="${product.stock}"></strong> piezas!
-                            </span>
-
-                        <span th:if="${product.stock == 0}" class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill">
-                                <i class="bi bi-x-circle-fill me-2"></i>Agotado temporalmente
-                            </span>
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>¡Solo quedan <strong th:text="${product.stock}"></strong> piezas!
+                        </span>
+                        <span th:if="${product.stock <= 0}" class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill">
+                            <i class="bi bi-x-circle-fill me-2"></i>Agotado temporalmente
+                        </span>
                     </div>
 
                     <div th:if="${product.stock > 0}" class="p-4 bg-light rounded border">
                         <form th:action="@{/cart/add}" method="post">
                             <input type="hidden" name="productId" th:value="${product.id}">
-
                             <div class="row align-items-end g-3">
                                 <div class="col-4 col-md-3">
                                     <label class="form-label fw-bold small text-muted">Cantidad:</label>
                                     <input type="number" name="quantity" class="form-control form-control-lg text-center fw-bold"
                                            value="1" min="1" th:max="${product.stock}">
                                 </div>
-
                                 <div class="col-8 col-md-9">
-                                    <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold py-2">
-                                        <i class="bi bi-cart-plus-fill me-2"></i> AGREGAR AL CARRITO
+                                    <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold py-2 shadow-sm">
+                                        <i class="bi bi-list-check me-2"></i> AGREGAR A MI LISTA
                                     </button>
                                 </div>
                             </div>
                         </form>
-                        <div class="text-center text-muted small mt-3">
-                            <i class="bi bi-truck"></i> Envío calculado en el carrito.
-                        </div>
                     </div>
 
-                    <div th:if="${product.stock == 0}">
+                    <div th:if="${product.stock <= 0}">
                         <a th:href="'https://wa.me/5213322560090?text=Hola, vi que el producto *' + ${product.sku} + '* está agotado. ¿Cuándo llega más?'"
-                           class="btn btn-secondary btn-lg fw-bold w-100 py-3" target="_blank">
+                           class="btn btn-secondary btn-lg fw-bold w-100 py-3 shadow-sm" target="_blank">
                             <i class="bi bi-whatsapp fs-4 me-2"></i> Consultar Disponibilidad
                         </a>
                     </div>

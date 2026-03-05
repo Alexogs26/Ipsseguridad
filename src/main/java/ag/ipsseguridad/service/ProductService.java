@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    Page<Product> findAll(Pageable pageable);
+    Page<Product> findAllProducsPaged(Pageable pageable);
 
     Page<Product> search(String query, Pageable pageable);
 

@@ -5,6 +5,7 @@ import ag.ipsseguridad.model.ProductMedia;
 import ag.ipsseguridad.repository.CategoryRepository;
 import ag.ipsseguridad.repository.ProductRepository;
 import ag.ipsseguridad.repository.SupplierRepository;
+import ag.ipsseguridad.service.ProductImportService;
 import ag.ipsseguridad.service.ProductService;
 import ag.ipsseguridad.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -26,6 +28,7 @@ public class AdminProductController {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final CloudinaryService cloudinaryService;
+    private final ProductImportService productImportService;
 
     @GetMapping
     public String listProducts(@RequestParam(name = "q", required = false) String keyword, Model model) {
@@ -137,5 +140,18 @@ public class AdminProductController {
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteById(id);
         return "redirect:/admin/products"; // recharge list
+    }
+
+    @PostMapping("/import")
+    public String importCsv(@RequestParam("file") MultipartFile file,
+                            @RequestParam("exchangeRate") BigDecimal exchangeRate,
+                            @RequestParam("margin") BigDecimal margin) {
+        try {
+            productImportService.importAdisesCsv(file, exchangeRate, margin);
+            // Idealmente aquí pondrías un FlashAttribute diciendo "Importación Exitosa"
+        } catch (Exception e) {
+            System.err.println("Error masivo: " + e.getMessage());
+        }
+        return "redirect:/admin/products";
     }
 }

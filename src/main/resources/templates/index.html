@@ -221,7 +221,7 @@
                 <h2 class="fw-bold mb-0 text-dark fs-3">
                     <span th:text="${currentCategory != null ? currentCategory.name : 'Catálogo Completo'}">Catálogo</span>
                 </h2>
-                <span class="badge bg-dark rounded-pill" th:text="${products.size() + ' Items'}">0 Items</span>
+                <span class="badge bg-dark rounded-pill" th:text="${page.totalElements + ' Productos'}">0 Items</span>
             </div>
 
             <div th:if="${currentSearch != null}" class="alert alert-info mb-4 d-flex justify-content-between align-items-center">
@@ -254,14 +254,14 @@
 
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0 text-dark fw-bold" th:text="'$' + ${product.price}">$0.00</h4>
+                                    <h5 class="mb-0 text-success fw-bold"><i class="bi bi-lock-fill"></i> A cotizar</h5>
                                 </div>
 
                                 <div class="d-grid gap-2">
                                     <form th:action="@{/cart/add}" method="post" class="d-grid">
                                         <input type="hidden" name="productId" th:value="${product.id}">
-                                        <button type="submit" class="btn btn-danger fw-bold shadow-sm" th:if="${product.stock > 0}">
-                                            <i class="bi bi-cart-plus me-1"></i> Agregar
+                                        <button type="submit" class="btn btn-dark fw-bold shadow-sm" th:if="${product.stock > 0}">
+                                            <i class="bi bi-list-check me-1"></i> Agregar a mi lista
                                         </button>
                                         <button type="button" class="btn btn-light text-muted border" th:if="${product.stock <= 0}" disabled>
                                             Sin Stock
@@ -272,6 +272,42 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div th:if="${page.totalPages > 1}" class="d-flex justify-content-center mt-5 mb-4">
+                <nav aria-label="Navegación de catálogo">
+                    <ul class="pagination justify-content-center flex-wrap shadow-sm gap-1">
+
+                        <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
+                            <a class="page-link text-danger fw-bold"
+                               th:href="@{''(page=${page.number - 1}, q=${param.q})}"
+                               tabindex="-1">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        </li>
+
+                        <th:block th:with="
+                        start=${page.number - 2 < 0 ? 0 : page.number - 2},
+                        end=${page.number + 2 >= page.totalPages ? page.totalPages - 1 : page.number + 2}">
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(start, end)}"
+                                th:classappend="${page.number == i} ? 'active' : ''">
+                                <a class="page-link fw-bold"
+                                   th:style="${page.number == i} ? 'background-color: #dc3545; border-color: #dc3545; color: white;' : 'color: #dc3545;'"
+                                   th:href="@{''(page=${i}, q=${param.q})}"
+                                   th:text="${i + 1}">1</a>
+                            </li>
+                        </th:block>
+
+                        <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
+                            <a class="page-link text-danger fw-bold"
+                               th:href="@{''(page=${page.number + 1}, q=${param.q})}">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
             </div>
 
             <div th:if="${products.empty}" class="text-center py-5 bg-white rounded shadow-sm">

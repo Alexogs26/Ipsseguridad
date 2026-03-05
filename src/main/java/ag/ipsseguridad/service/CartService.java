@@ -54,13 +54,23 @@ public class CartService {
     }
 
     public List<CartItem> getItems() {
+        List<Long> ids = new ArrayList<>(items.keySet());
+        List<Product> productsWithMedia = productRepository.findAllByIdWithMedia(ids);
+
+        for (Product p : productsWithMedia) {
+            if (items.containsKey(p.getId())) {
+                items.get(p.getId()).setProduct(p);
+            }
+        }
+
         return new ArrayList<>(items.values());
     }
 
     public BigDecimal getTotal() {
-        return items.values().stream()
-                .map(CartItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // return items.values().stream()
+        //        .map(CartItem::getTotalPrice)
+        //        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return BigDecimal.ZERO;
     }
 
     public int getCount() {
