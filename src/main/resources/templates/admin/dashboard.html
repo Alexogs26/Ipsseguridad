@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-    .logo-img { max-height: 80px; width: auto; }
-    .btn-vt {color: black}
+        .logo-img { max-height: 80px; width: auto; }
+        .btn-vt {color: black}
     </style>
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
@@ -31,6 +31,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin/cotizador">
+                        <i class="bi bi-calculator me-1"></i> Cotizador
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-black opacity-75" href="/admin/products">
                         <i class="bi bi-box-seam me-1"></i> Inventario
                     </a>
@@ -42,7 +47,7 @@
                 </li>
             </ul>
             <div class="d-flex justify-content-center">
-                <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-shop"></i> Ir a la Tienda</a>
+                <a href="/" class="btn btn-outline-dark btn-sm"><i class="bi bi-shop"></i> Ir a la Tienda</a>
             </div>
         </div>
     </div>
@@ -54,6 +59,23 @@
     </div>
 
     <div class="row g-4">
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-bottom: 4px solid #198754 !important;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-bold text-dark m-0">Cotizador B2B</h5>
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-3">
+                            <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-4">Calcula precios con el dólar del día, ajusta márgenes y genera PDFs de Syscom.</p>
+                    <h3 class="fw-bold mb-4 text-success">Generar PDF</h3>
+                    <a href="/admin/cotizador" class="btn btn-success w-100 fw-bold">Abrir Cotizador <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-6 col-lg-4">
             <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden">
                 <div class="card-body p-4">
@@ -86,7 +108,7 @@
             </div>
         </div>
 
-        <div class="col-md-12 col-lg-4">
+        <div class="col-md-6 col-lg-4">
             <div class="card border-0 shadow-sm h-100 bg-light opacity-75">
                 <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
                     <i class="bi bi-graph-up-arrow text-muted fs-1 mb-3"></i>
@@ -96,6 +118,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 

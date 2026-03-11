@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cotizador y PDF | IPS Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        .logo-img { max-height: 80px; width: auto; }
+        .tabla-cotizador td { vertical-align: middle; }
+        @media (max-width: 768px) {
+            .mobile-hide { display: none !important; }
+            .mobile-small-text { font-size: 0.85rem; }
+            .mobile-input-qty { width: 35px !important; padding: 0 !important; text-align: center; }
+            .desc-truncada { max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        }
+        @media (min-width: 769px) {
+            .desc-truncada { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+            .mobile-input-qty { width: 50px !important; text-align: center; }
+        }
+
+        #pdf-wrapper {
+            position: fixed; top: 0; left: -9999px; width: 0; height: 0; overflow: hidden; z-index: -1;
+        }
+        #pdf-container { width: 1024px; }
+        #pdf-template { background: white; color: black; font-family: Arial, sans-serif; padding: 40px; width: 100%; }
+        .pdf-header { border-bottom: 2px solid #dc3545; padding-bottom: 15px; margin-bottom: 20px; }
+        .pdf-title { color: #dc3545; font-weight: bold; font-size: 26px; text-align: right; }
+        .pdf-table { width: 100%; border-collapse: collapse; }
+        .pdf-table th { background-color: #f8f9fa; border-bottom: 2px solid #dc3545 !important; font-size: 14px; padding: 10px 5px;}
+        .pdf-table td { font-size: 13px; vertical-align: middle; border-bottom: 1px solid #dee2e6; padding: 10px 5px;}
+        .pdf-img { max-width: 60px; max-height: 60px; object-fit: contain; }
+        .pdf-totals-box { border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid px-4">
+        <a href="/" class="text-decoration-none">
+            <img th:src="@{/images/logo.png}"
+                 alt="IPSSEGURIDAD Logo"
+                 class="logo-img">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse text-center mt-3 mt-lg-0" id="adminMenu">
+            <ul class="navbar-nav mx-auto mb-3 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-success" href="/admin/cotizador">
+                        <i class="bi bi-calculator me-1"></i> Cotizador
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin/products">
+                        <i class="bi bi-box-seam me-1"></i> Inventario
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-black opacity-75" href="/admin/orders">
+                        <i class="bi bi-receipt me-1"></i> Pedidos
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex justify-content-center">
+                <a href="/" class="btn btn-outline-dark btn-sm"><i class="bi bi-shop"></i> Ir a la Tienda</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-2 px-md-4 mb-5">
+    <div class="row g-3">
+
+        <div class="col-12 col-lg-3">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-danger text-white fw-bold py-2"><i class="bi bi-person-lines-fill me-2"></i> Cliente</div>
+                <div class="card-body p-2 p-md-3">
+                    <input type="text" id="clienteNombre" class="form-control mb-2 form-control-sm" placeholder="Nombre o Empresa">
+                    <div class="row g-2">
+                        <div class="col-6"><input type="text" id="clienteTelefono" class="form-control form-control-sm" placeholder="Teléfono"></div>
+                        <div class="col-6"><input type="text" id="cotizacionFolio" class="form-control form-control-sm" value="COT-001" placeholder="Folio"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6 col-lg-12">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-dark text-white fw-bold small py-2"><i class="bi bi-currency-dollar me-1"></i> Dólar</div>
+                        <div class="card-body p-2">
+                            <input type="number" id="tasaCambio" class="form-control form-control-sm fw-bold text-success text-center" value="17.00" step="0.01" oninput="calcularTodo()">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-12">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-dark text-white fw-bold small py-2"><i class="bi bi-percent me-1"></i> Margen</div>
+                        <div class="card-body p-2">
+                            <select id="margenGanancia" class="form-select form-select-sm fw-bold" onchange="calcularTodo()">
+                                <option value="1.12" selected>Técnico (12%)</option>
+                                <option value="1.20">Público (20%)</option>
+                                <option value="1.30">Proyecto (30%)</option>
+                                <option value="1.00">Neto (0%)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-secondary text-white fw-bold py-2"><i class="bi bi-search me-2"></i> Buscar Equipo</div>
+                <div class="card-body p-2 p-md-3">
+                    <input type="text" id="buscador" class="form-control form-control-sm mb-2" placeholder="Buscar modelo..." onkeyup="filtrarProductos()">
+                    <div class="list-group" id="listaResultados" style="max-height: 200px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-9">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <div class="row align-items-center g-2">
+                        <div class="col-12 col-sm-4 text-center text-sm-start">
+                            <h5 class="m-0 fw-bold"><i class="bi bi-calculator text-danger me-2"></i> Previa</h5>
+                        </div>
+                        <div class="col-12 col-sm-8">
+                            <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+                                <button class="btn btn-outline-danger btn-sm" onclick="limpiarCotizador()"><i class="bi bi-trash"></i> Limpiar</button>
+                                <button class="btn btn-success fw-bold shadow-sm" onclick="descargarPDF()"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Generar PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle text-center tabla-cotizador mb-0 mobile-small-text">
+                            <thead class="table-light text-muted small">
+                            <tr>
+                                <th style="width: 100px;">Cant.</th>
+                                <th class="mobile-hide">Imagen</th> <th class="text-start">Modelo</th>
+                                <th>P.U.</th>
+                                <th class="text-success fw-bold">Total</th>
+                                <th><i class="bi bi-trash"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tablaPantalla"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white text-center text-md-end py-3">
+                    <h4 class="m-0 fs-5 fs-md-4">Total: <span id="totalPantalla" class="text-danger fw-bold">$0.00</span></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pdf-wrapper">
+    <div id="pdf-container">
+        <div id="pdf-template">
+            <div class="row pdf-header align-items-center">
+                <div class="col-6">
+                    <img src="/images/logo.png" alt="IPS Logo" style="max-height: 65px; margin-bottom: 10px;">
+                    <div style="font-size: 12px; color: #444;">
+                        <strong>IPSSEGURIDAD</strong><br>
+                        Tesistán, Jalisco, México. CP 45200<br>
+                        WhatsApp: 33 2256 0090<br>
+                        ipsalarmasyseguridad@gmail.com
+                    </div>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="pdf-title">COTIZACIÓN</div>
+                    <div style="font-size: 13px; margin-top: 10px; color: #444;">
+                        <strong>Folio:</strong> <span id="pdf-folio" class="text-danger fw-bold">COT-001</span><br>
+                        <strong>Fecha:</strong> <span id="pdf-fecha">01/01/2026</span><br>
+                        <strong>Vigencia:</strong> 3 Días Hábiles
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12" style="font-size: 13px; background: #f8f9fa; padding: 12px; border-left: 5px solid #dc3545; border-radius: 4px;">
+                    <strong>Atención a:</strong> <span id="pdf-cliente-nombre">Cliente Mostrador</span><br>
+                    <strong>Contacto:</strong> <span id="pdf-cliente-tel">No especificado</span>
+                </div>
+            </div>
+
+            <table class="table pdf-table text-center mb-4">
+                <thead>
+                <tr>
+                    <th style="width: 12%;">IMAGEN</th>
+                    <th style="width: 48%; text-align: left;">CÓDIGO / DESCRIPCIÓN</th>
+                    <th style="width: 10%;">CANT.</th>
+                    <th style="width: 15%;">PRECIO U.</th>
+                    <th style="width: 15%;">TOTAL</th>
+                </tr>
+                </thead>
+                <tbody id="pdf-tabla-body"></tbody>
+            </table>
+
+            <div class="row justify-content-end">
+                <div class="col-5">
+                    <div class="pdf-totals-box">
+                        <div class="d-flex justify-content-between mb-2" style="font-size: 13px; color: #555;">
+                            <span>Subtotal:</span> <span id="pdf-subtotal">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" style="font-size: 13px; color: #555;">
+                            <span>I.V.A. (16%):</span> <span id="pdf-iva">$0.00</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between" style="font-size: 18px; font-weight: bold; color: #dc3545;">
+                            <span>TOTAL MXN:</span> <span id="pdf-total-final">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5" style="font-size: 10px; color: #777; border-top: 1px solid #dee2e6; padding-top: 15px;">
+                <strong>Términos y Condiciones:</strong><br>
+                * Precios expresados en Moneda Nacional (MXN) con IVA incluido.<br>
+                * Cotización sujeta a la fluctuación del dólar. Precios y existencias sujetos a cambios sin previo aviso.<br>
+                * Para confirmar su pedido se requiere comprobante de pago vía WhatsApp.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let catalogo = [];
+    let itemsCotizador = [];
+    const formatoDinero = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch('/admin/cotizador/api/catalogo')
+            .then(res => res.json())
+            .then(data => catalogo = data)
+            .catch(err => console.error("Error al cargar catálogo:", err));
+    });
+
+    function filtrarProductos() {
+        const query = document.getElementById('buscador').value.toLowerCase();
+        const lista = document.getElementById('listaResultados');
+        lista.innerHTML = '';
+        if(query.length < 2) return;
+
+        const resultados = catalogo.filter(p => p.sku.toLowerCase().includes(query) || p.name.toLowerCase().includes(query)).slice(0, 15);
+
+        resultados.forEach(p => {
+            let safeName = p.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            lista.innerHTML += `
+                <button type="button" class="list-group-item list-group-item-action py-2"
+                        onclick="agregarAlCotizador('${p.sku}', '${safeName}', ${p.costUsd}, '${p.imagen}')">
+                    <div class="d-flex align-items-center">
+                        <img src="${p.imagen}" style="width:30px; height:30px; object-fit:contain;" class="me-2">
+                        <div style="font-size: 0.8rem; line-height: 1.2;">
+                            <strong>${p.sku}</strong> ($${p.costUsd} USD)<br>
+                            <span class="text-muted text-truncate d-inline-block" style="max-width:180px;">${p.name}</span>
+                        </div>
+                    </div>
+                </button>`;
+        });
+    }
+
+    function agregarAlCotizador(sku, nombre, costoUsd, imagen) {
+        let item = itemsCotizador.find(i => i.sku === sku);
+        if(item) { item.cantidad += 1; }
+        else { itemsCotizador.push({ sku, nombre, costoUsd, imagen, cantidad: 1 }); }
+        document.getElementById('buscador').value = '';
+        document.getElementById('listaResultados').innerHTML = '';
+        calcularTodo();
+    }
+
+    function cambiarCantidad(sku, delta) {
+        let item = itemsCotizador.find(i => i.sku === sku);
+        if(item) {
+            item.cantidad += delta;
+            if(item.cantidad <= 0) remover(sku);
+            else calcularTodo();
+        }
+    }
+
+    function remover(sku) {
+        itemsCotizador = itemsCotizador.filter(i => i.sku !== sku);
+        calcularTodo();
+    }
+
+    function limpiarCotizador() { itemsCotizador = []; calcularTodo(); }
+
+    function calcularTodo() {
+        const tc = parseFloat(document.getElementById('tasaCambio').value) || 20.00;
+        const margen = parseFloat(document.getElementById('margenGanancia').value) || 1.20;
+
+        const tbodyPantalla = document.getElementById('tablaPantalla');
+        const tbodyPDF = document.getElementById('pdf-tabla-body');
+
+        tbodyPantalla.innerHTML = '';
+        tbodyPDF.innerHTML = '';
+        let subtotalGlobal = 0;
+
+        if(itemsCotizador.length === 0) {
+            tbodyPantalla.innerHTML = `<tr><td colspan="6" class="text-muted py-5"><i class="bi bi-box-seam fs-3 d-block mb-2"></i>Busca equipos para comenzar.</td></tr>`;
+            document.getElementById('totalPantalla').innerText = "$0.00";
+            return;
+        }
+
+        itemsCotizador.forEach(item => {
+            let costoMxn = item.costoUsd * tc;
+            let precioUnitarioSinIva = costoMxn * margen;
+            let precioUnitarioConIva = precioUnitarioSinIva * 1.16;
+            let importeConIva = precioUnitarioConIva * item.cantidad;
+            let importeSinIva = precioUnitarioSinIva * item.cantidad;
+
+            subtotalGlobal += importeSinIva;
+
+            tbodyPantalla.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="input-group input-group-sm flex-nowrap mx-auto" style="width: max-content;">
+                            <button class="btn btn-outline-secondary px-2" onclick="cambiarCantidad('${item.sku}', -1)">-</button>
+                            <input type="text" class="form-control bg-white mobile-input-qty" value="${item.cantidad}" readonly>
+                            <button class="btn btn-outline-secondary px-2" onclick="cambiarCantidad('${item.sku}', 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="mobile-hide"><img src="${item.imagen}" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: contain;"></td>
+                    <td class="text-start">
+                        <strong>${item.sku}</strong><br>
+                        <span class="text-muted desc-truncada">${item.nombre}</span>
+                    </td>
+                    <td class="fw-bold text-muted">${formatoDinero.format(precioUnitarioConIva)}</td>
+                    <td class="fw-bold text-success">${formatoDinero.format(importeConIva)}</td>
+                    <td><button class="btn btn-sm text-danger px-2" onclick="remover('${item.sku}')"><i class="bi bi-x-lg"></i></button></td>
+                </tr>`;
+
+            tbodyPDF.innerHTML += `
+                <tr>
+                    <td><img src="${item.imagen}" class="pdf-img" crossorigin="anonymous"></td>
+                    <td style="text-align: left;">
+                        <strong>${item.sku}</strong><br>
+                        <span style="font-size: 10px; color: #555;">${item.nombre}</span>
+                    </td>
+                    <td>${item.cantidad}</td>
+                    <td>${formatoDinero.format(precioUnitarioSinIva)}</td>
+                    <td>${formatoDinero.format(importeSinIva)}</td>
+                </tr>`;
+        });
+
+        let ivaGlobal = subtotalGlobal * 0.16;
+        let totalFinal = subtotalGlobal + ivaGlobal;
+
+        document.getElementById('totalPantalla').innerText = formatoDinero.format(totalFinal);
+
+        document.getElementById('pdf-subtotal').innerText = formatoDinero.format(subtotalGlobal);
+        document.getElementById('pdf-iva').innerText = formatoDinero.format(ivaGlobal);
+        document.getElementById('pdf-total-final').innerText = formatoDinero.format(totalFinal);
+    }
+
+    function descargarPDF() {
+        if(itemsCotizador.length === 0) { alert("Agrega al menos un producto."); return; }
+
+        document.getElementById('pdf-cliente-nombre').innerText = document.getElementById('clienteNombre').value || "Cliente Mostrador";
+        document.getElementById('pdf-cliente-tel').innerText = document.getElementById('clienteTelefono').value || "N/A";
+        document.getElementById('pdf-folio').innerText = document.getElementById('cotizacionFolio').value || "COT-001";
+        document.getElementById('pdf-fecha').innerText = new Date().toLocaleDateString('es-MX');
+
+        const elemento = document.getElementById('pdf-template');
+
+        const opciones = {
+            margin:       10,
+            filename:     `Cotizacion_${document.getElementById('cotizacionFolio').value}_IPS.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opciones).from(elemento).save();
+    }
+</script>
+</body>
+</html>

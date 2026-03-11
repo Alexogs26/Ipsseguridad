@@ -81,6 +81,7 @@ public class ProductImportService {
                     if (existingProduct.isPresent()) {
                         Product p = existingProduct.get();
                         p.setStock(stock);
+                        p.setCostUsd(costUsdNoIva);
                         p.setCost(finalCostMxn);
                         p.setPrice(finalPriceMxn);
                         productRepository.save(p);
@@ -90,6 +91,7 @@ public class ProductImportService {
                                 .name(description.length() > 255 ? description.substring(0, 250) : description)
                                 .description(line[4].trim()) // Ponemos los "Technology Highlights" en la descripción detallada
                                 .stock(stock)
+                                .costUsd(costUsdNoIva)
                                 .cost(finalCostMxn)
                                 .price(finalPriceMxn)
                                 .supplier(supplier)

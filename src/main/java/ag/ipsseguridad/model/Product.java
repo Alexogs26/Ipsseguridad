@@ -33,6 +33,9 @@ public class Product {
 
     private BigDecimal cost;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal costUsd;
+
     private Integer stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
